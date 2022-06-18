@@ -4,11 +4,10 @@
 
 # Python-GameDEV
 
-Tisztelt nberek, Ã¡llatok, csÃºszÃ³mÃ¡szÃ³k Ã©s egyÃ©b Ã©gi szerzetesek, drogdÃ­lerek, maszkulinok, orosz cÃ¡rok, OrbÃ¡n Viktorok Ã©s tisztelt egybegyÅ±lt familiÃ¡risan pigmentÃ¡lt egyÃ©nÅ± egyÃ©nisÃ©gek.
+Tisztelt nberek, állatok, csúszómászók és egyéb égi szerzetesek, drogdílerek, maszkulinok, orosz cárok, Orbán Viktorok és tisztelt egybegyûlt familiárisan pigmentált egyénû egyéniségek.
 
 Ursina - GLHF
-
+Grayhollow
 --------------------------------------------------------------
 
-
-Alapok: 
+Alapok:
