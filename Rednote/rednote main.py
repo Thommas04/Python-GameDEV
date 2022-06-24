@@ -3,9 +3,10 @@
 from ursina import *
 from ursina.shaders import lit_with_shadows_shader
 
-
+# Own modules
 from functions import *
 from camera_control import *
+from models import *
 
 app = Ursina()
 
@@ -40,36 +41,19 @@ runspeed = 10 # Ezt a mennyiseget adja hozza a jatekos walkspeedjehez.
 # ---------------------------------------------------------------------------------------------------------------------[]
 # [Declare Objects]----------------------------------------------------------------------------------------------------[]
 
-map = Entity(model = 'cube',
-             position = (0, 0, 0.01),
-             scale = (16, 0, -9),
-             texture = 'textures\\teszt',
-             rotation = (90,0,0)
-            )
 
 verts = ((0,0,0), (1,0,0), (.5, 1, 0), (-.5,1,0))
 tris = (1, 2, 0, 2, 3, 0)
 
-e = Entity(model=Mesh(vertices=verts, triangles=tris), scale=2)
+#e = Entity(model=Mesh(vertices=verts, triangles=tris), scale=2)
 
-player = Entity(model = 'cube',
-             position = (0, 0, 0),
-             scale = (0.5),
-             rotation = (90,0,0),
-             collider = 'mesh'
-            )
+#class Player:
+   # def move_right(self):
 
-box = Entity(model = 'plane',
-             position = (10, 2, 0),
-             scale = (16, 0, -9),
-             texture = 'textures\\saloon',
-             rotation = (90,0,0),
-             collider = 'mesh'
-            )
 
-#L1 = PointLight(y = -2, z = 2, color = color.black, scale = 10)
-#L2 = PointLight(y = -5, z = 10, color = color.blue, scale = 100)
-L3 = PointLight(y = 10,x = 2, z = 1, color = color.red, scale = 1)
+#L1 = PointLight(y = -2, z = 100, color = color.black, scale = 1000)
+#L2 = PointLight(y = -5, z = 100, color = color.blue, scale = 1000)
+#L3 = PointLight(y = -5, z = 10, color = color.blue, scale = 100)
 
 # [ Functions ]--------------------------------------------------------------------------------------------------------[]
 
