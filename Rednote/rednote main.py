@@ -30,7 +30,7 @@ move_rightBIND = "d"
 # [ Variables ]--------------------------------------------------------------------------------------------------------[]
 
 # camera :
-camera.fov = 43.62 # default [ field of view ]
+camera.fov = 60 # default [ field of view ]
 
 camera_maxheight = 100 # A kamera es a karakter mozgato WASD-vel - ez adja meg a vegso hatarerteket magassagban.
 camera_maxwidth = 100
@@ -60,7 +60,7 @@ upper_body = Entity(model = 'plane',
                     )
 
 lower_body = Entity(model = 'plane',
-                    position = Vec3(0, 0.001, -0.5),
+                    position = Vec3(0, 0.005, -0.4),
                     scale = player_scale,
                     rotation = (90, 0, 0),
                     collider = 'mesh',
@@ -82,7 +82,7 @@ def anim_loop(): # ez gyakorlatilag egy folyamatos rekurziv loop, ami az animaci
 
     invoke(Func(front_anim, refresh, upper_body, lower_body), delay=0)
 
-    invoke(anim_loop, delay = 0.04 )
+    invoke(anim_loop, delay = 0.035)
 anim_loop()
 
 place_all_objects() # lerakja az osszes modelt a fajlbol
