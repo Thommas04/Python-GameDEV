@@ -2,13 +2,6 @@
 from ursina import *
 
 def place_all_objects():
-    player = Entity(model='cube',
-                    position=(0, 0, 0),
-                    scale=(0.5),
-                    rotation=(90, 0, 0),
-                    collider='mesh'
-                    )
-
     saloon = Entity(model='plane',
                     position=(10, 2, 0),
                     scale=(16, 0, -9),

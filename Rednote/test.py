@@ -16,6 +16,8 @@ pivot = Entity()
 #L2 = PointLight(y = -5, z = 10, color = color.blue, scale = 100)
 L3 = PointLight(y = 10,x = 2, z = 1, color = color.white, scale = 1)
 
+camera.shake(duration=.2, magnitude=1, speed=.05, direction=(1, 1))
+
 #DirectionalLight(parent=pivot, y=0, z=0, shadows=True, rotation=(45, -45, 45))
 
 app.run()
