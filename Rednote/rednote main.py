@@ -6,7 +6,7 @@ from ursina.shaders import lit_with_shadows_shader
 # Own modules
 from time import sleep
 from functions import *
-from camera_control import *
+from player import *
 from objects import *
 from anims import *
 
@@ -45,10 +45,27 @@ player_scale = (1.2, 0, -1.67)
 # [Declare Objects]----------------------------------------------------------------------------------------------------[]
 
 
-verts = ((0,0,0), (1,0,0), (.5, 1, 0), (-.5,1,0))
-tris = (1, 2, 0, 2, 3, 0)
+verts = ((17.22, -0.14, 0),
+(18.6, -0.21, 0),
+(17.54, 3.24, 0),
+(17.54, 3.26, 0),
+(18.74, -0.46, 0),
+(22.03, -0.48, 0),
+(22.03, -0.46, 0),
+(21.85, 3.21, 0),
+(17.54, 3.26, 0),
+(21.85, 3.21, 0),
+(22.05, -0.17, 0),
+(27.15, -0.21, 0),
+(27.15, -0.21, 0),
+(21.85, 3.21, 0),
+(26.36, 3.1, 0),
+(21.85, 3.14, 0),
+(27.11, -0.18, 0),
+(26.58, 3.16, 0))
+tris = (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
 
-#e = Entity(model=Mesh(vertices=verts, triangles=tris), scale=2)
+e = Entity(model=Mesh(vertices=verts, triangles=tris), scale = 1)
 
 
 upper_body = Entity(model = 'plane',
@@ -82,7 +99,10 @@ def anim_loop(): # ez gyakorlatilag egy folyamatos rekurziv loop, ami az animaci
 
     invoke(Func(front_anim, refresh, upper_body, lower_body), delay=0)
 
-    invoke(anim_loop, delay = 0.035)
+    if held_keys[runBIND]:
+        invoke(anim_loop, delay = 0.02)
+    else:
+        invoke(anim_loop, delay = 0.035)
 anim_loop()
 
 place_all_objects() # lerakja az osszes modelt a fajlbol
@@ -90,6 +110,7 @@ place_all_objects() # lerakja az osszes modelt a fajlbol
 # [ Update Function ]--------------------------------------------------------------------------------------------------[]
 
 player_body_part = [upper_body, lower_body]
+
 
 def update():
     global movespeed

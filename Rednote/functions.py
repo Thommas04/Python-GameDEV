@@ -12,3 +12,9 @@ def create_net():
 
     line_x = Entity(model = Mesh(vertices = [Vec3(0, -100, 0), Vec3(0, 100, 0)], mode = 'line', thickness = 3), z = -0.22, color = color.blue)
     line_y = Entity(model = Mesh(vertices = [Vec3(-100, 0, 0), Vec3(100, 0, 0)], mode = 'line', thickness = 3), z = -0.22, color = color.blue)
+
+def input(key):
+    if key == 'left mouse down':
+        print("(", round(mouse.world_point.x,2),", ", round(mouse.world_point.y,2) ,", ", 0 , "),", sep = "")
+        Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -0.001 ), scale = 10, text = str(round(mouse.world_point.x,2)) + " / " + str(round(mouse.world_point.y,2)))
+        Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.1, world_position = (mouse.world_point.x, mouse.world_point.y, 0 )  )
