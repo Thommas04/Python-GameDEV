@@ -1,4 +1,4 @@
-
+pd.read_csv('ml-100k/u.item', sep='|', names=m_cols , encoding='latin-1')
 
 
 
