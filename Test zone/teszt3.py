@@ -1,23 +1,42 @@
-from ursina import *
 
+from ursina import *
+from ursina import CubicBezier
 app = Ursina()
 
-verts = ((17.22, -0.14, 0),(18.6, -0.21, 0),(17.54, 3.24, 0),(17.54, 3.26, 0),(18.74, -0.46, 0),(22.03, -0.48, 0),(22.03, -0.46, 0),(21.85, 3.21, 0),(17.54, 3.26, 0),(21.85, 3.21, 0),(22.05, -0.17, 0),(27.15, -0.21, 0),(27.15, -0.21, 0),(21.85, 3.21, 0),(26.36, 3.1, 0),(21.85, 3.14, 0),(27.11, -0.18, 0),(26.58, 3.16, 0))
-tris = (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
+camera.orthographic = True
+camera.fov = 16
+camera.position = (9, 6)
+window.color = color.black
 
+i = 0
+for e in dir(curve):
+    try:
+        item = getattr(curve, e)
+        print(item.__name__, ':', item(.75))
+        curve_renderer = Entity(
+            model=Mesh(vertices=[Vec3(i / 31, item(i / 31), 0) for i in range(32)], mode='line', thickness=2),
+            color=color.light_gray)
+        row = floor(i / 8)
+        curve_renderer.x = (i % 8) * 2.5
+        curve_renderer.y = row * 1.75
+        label = Text(parent=curve_renderer, text=item.__name__, scale=8, color=color.gray, y=-.1)
+        i += 1
+    except:
+        pass
 
-player = Entity(model='plane', color=color.orange, collider='box', origin_y=-.5, rotation = (-90, 0, 0), position = (5, 2, 0))
+c = CubicBezier(0, .5, 1, .5)
+print('-----------', c.calculate(.23))
 
-trigger_box = Entity(model='plane', color=color.red, scale=2, collider='mesh', rotation = (-90, 0, 0), origin_y=-.5)
-EditorCamera()
+window.exit_button.visible = False
+window.fps_counter.enabled = False
+'''
+These are used by Entity when animating, like this:
 
-def update():
-    direction = Vec3(player.forward * (held_keys['w'] - held_keys['s']) + player.right * (held_keys['d'] - held_keys['a']))
+e = Entity()
+e.animate_y(1, curve=curve.in_expo)
 
-    if player.intersects(trigger_box, debug = True).hit:
-        trigger_box.color = color.lime
-        player.position += direction * 5 * time.dt
-        print('player is inside trigger box')
-
+e2 = Entity(x=1.5)
+e2.animate_y(1, curve=curve.CubicBezier(0,.7,1,.3))
+'''
 
 app.run()
