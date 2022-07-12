@@ -1,6 +1,7 @@
 from ursina import *
 from ursina.raycaster import raycast
 from functions import *
+from random import *
 
 app = Ursina()
 #EditorCamera()
@@ -8,7 +9,7 @@ app = Ursina()
 background = Entity(model = 'cube', collider = 'box', scale = (1000,1000,0), color = color.dark_gray, position = (0,0,0.1))
 
 
-create_net()
+#6create_net()
 
 class Enemy(Entity):
     def __init__(self, x, y, hp, **kwargs):
@@ -40,31 +41,58 @@ enemy8 = Enemy(45,5,50,model='plane', color = color.orange, scale = (1, 1, -1), 
 
 ########################################################################################################################
 
+full_ammo = 500 # bullet
+revolver_ammo = 10 # bullet
+revolver_shoot_speed = 0.2 # sec
+pull_up = True
 shoot = False
+
+def pull_up_delay():
+    global pull_up
+    if pull_up == False:
+        pull_up = True
+
 def input(key):
+    global pull_up, revolver_ammo, full_ammo
     if key == 'left mouse down':
-        if shoot == True:
+        if pull_up == True and revolver_ammo > 0:
             x, y, z = mouse.position
             real_pos = lower_body.position + (camera.fov * x, camera.fov * y, 0)
-            direction = [real_pos[0] - lower_body.x, real_pos[1] - lower_body.y, 0]
-            duration = 0.03 * (distance(lower_body.position + [20 * p for p in direction], lower_body.world_position))
 
-            bullet = Entity(parent = scene, model = 'sphere', collider = 'box', color = color.black, position=lower_body.position, tag = 'projectile', scale = (0.3, 0.3, 0))
-            bullet.animate_position(lower_body.position + [20 * p for p in direction], duration= duration, curve = curve.linear)
+            if shoot == True: # Ha a karakter celoz, mikozbe lo
+                direction = [real_pos[0] - lower_body.x, real_pos[1] - lower_body.y, 0]
+            if shoot == False: # Ha a karakter nem celoz - eredmeny hogy nagyobb a szoras
+                direction = [(real_pos[0] - lower_body.x) + (randint(-500,500) / 100),
+                             (real_pos[1] - lower_body.y) + (randint(-500,500) / 100), 0]
+
+            duration = 0.03 * (distance(lower_body.position + [20 * p for p in direction], lower_body.world_position))
+            bullet = Entity(parent = scene, model = 'sphere', collider = 'box', color = color.black, position = lower_body.position, tag = 'projectile', scale = (0.2, 0.2, 0.05))
+            bullet.animate_position(lower_body.position + [20 * p for p in direction], duration = duration, curve = curve.linear)
             invoke(destroy, bullet, delay = 1)
 
-            ray = bullet.intersects(debug = False, ignore = (lower_body, bullet, right, left, up, down))
+            ray = raycast(lower_body.position, direction, distance = 50, ignore = (lower_body, bullet, right, left, up, down), debug = False)
             if ray.hit:
                 if ray.entity.tag == 'building':
-                    destroy(ray.entity, delay = 0.3)
+                    destroy(bullet, delay = ray.distance * 0.035)
 
+            pull_up = False
+            revolver_ammo -= 1
+            invoke(pull_up_delay, delay = revolver_shoot_speed)
+            #print('\nra:',revolver_ammo)
 
+    if key == 'r': # reload
+        for i in range(10 - revolver_ammo):
+            if full_ammo > 0:
+                full_ammo -= 1
+                revolver_ammo += 1
 
+        print('--------------------\nfa:', full_ammo, '\nra:',revolver_ammo)
 
 def update():
-    global shoot
+    global shoot, movespeed
     if held_keys['right mouse']:
         shoot = True
+        movespeed = 1
     else:
         shoot = False
 
@@ -75,15 +103,17 @@ def collison_hit():
 
 class Player(Entity):
     def update(self):
+        global movespeed
         right_hit = right.intersects(debug = False, ignore = (right, left, up, down))
         left_hit = left.intersects(debug = False, ignore = (right, left, up, down))
         up_hit = up.intersects(debug = False, ignore = (right, left, up, down))
         down_hit = down.intersects(debug = False, ignore = (right, left, up, down))
 
-        if held_keys['shift']:
-            movespeed = 4
-        else:
-            movespeed = 2.5
+        if shoot == False:
+            if held_keys['shift']:
+                movespeed = 4
+            else:
+                movespeed = 2.5
 
         if right_hit.hit == False:
             right.x += held_keys['d'] * movespeed * time.dt
@@ -123,7 +153,7 @@ class Player(Entity):
 
 
 
-# [][][][][][][][][][][][][][][][][][][][][]
+# [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
 lower_body = Player(model='plane', color = color.orange, scale = (1,1,-1), position = (0,0.5,0), rotation = (90,0,0), tag = 'player')
 
