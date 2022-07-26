@@ -7,6 +7,7 @@ from ursina.shaders import lit_with_shadows_shader
 from collisions import *
 from time import sleep
 from functions import *
+from threading import *
 from player import *
 from objects import *
 from anims import *
@@ -33,7 +34,17 @@ camera.fov = 60 # default [ field of view ]
 
 # [ Lights ]-----------------------------------------------------------------------------------------------------------[]
 
-#L1 = PointLight(y = -2, z = 100, color = color.black, scale = 1000)
+xx = 0
+def light(a):
+    global xx
+    xx += 1
+    L1 = PointLight(y = -2, z = 100, color = color.rgb(xx,xx,xx), scale = 1000)
+
+    invoke(light, None, delay = 2)
+
+thread1 = Thread(target = light, args = (1,))
+thread1.start()
+
 #L2 = PointLight(y = -5, z = 100, color = color.blue, scale = 1000)
 #L3 = PointLight(y = -5, z = 10, color = color.blue, scale = 100)
 
