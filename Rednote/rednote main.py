@@ -34,16 +34,18 @@ camera.fov = 60 # default [ field of view ]
 
 # [ Lights ]-----------------------------------------------------------------------------------------------------------[]
 
-xx = 0
-def light(a):
-    global xx
+L1 = PointLight(y = -2, z = 100, color = color.rgb(10,10,10), scale = 1000)
+
+xx = 10
+def light():
+    global L1, xx
     xx += 1
-    L1 = PointLight(y = -2, z = 100, color = color.rgb(xx,xx,xx), scale = 1000)
+    print(xx)
+    L1.color = color.rgb(xx,xx,xx)
 
-    invoke(light, None, delay = 2)
+    invoke(light, delay = 0.1)
 
-thread1 = Thread(target = light, args = (1,))
-thread1.start()
+light()
 
 #L2 = PointLight(y = -5, z = 100, color = color.blue, scale = 1000)
 #L3 = PointLight(y = -5, z = 10, color = color.blue, scale = 100)
