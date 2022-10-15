@@ -1,19 +1,29 @@
-from machine import Pin, ADC, PWM
-import utime
+from ursina import *
 
-pot_value = ADC(0)
-LED = PWM(Pin(7))
+app = Ursina()
 
-LED.freq(1000)
+a = 0
 
-led_pin = machine.Pin(25, machine.Pin.OUT)
+stage = 1
+def slow_check():
+    global stage
+    if stage == 2:
+        stage = 100
+    if stage == 1:
+        stage = 2
 
-while True:
-    LED.duty_u16(pot_value.read_u16())
+    invoke(slow_check, delay = 3)
+slow_check()
 
-while True:
-    led_pin.value(1)
-    utime.sleep(0.5)
-    led_pin.value(0)
-    utime.sleep(0.5)
-    print("gugi")
+def update():
+    global a
+    if stage == 2:
+        a += 1
+
+def input(key):
+    if key == 'left mouse down':
+        print(a)
+
+
+
+app.run()
