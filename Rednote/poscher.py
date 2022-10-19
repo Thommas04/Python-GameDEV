@@ -2,28 +2,15 @@ from ursina import *
 
 app = Ursina()
 
-a = 0
-
-stage = 1
-def slow_check():
-    global stage
-    if stage == 2:
-        stage = 100
-    if stage == 1:
-        stage = 2
-
-    invoke(slow_check, delay = 3)
-slow_check()
+global_time = 0 #
+last_time = 0
 
 def update():
-    global a
-    if stage == 2:
-        a += 1
-
-def input(key):
-    if key == 'left mouse down':
-        print(a)
-
+    global global_time, last_time
+    global_time += time.dt
+    if global_time - last_time > 2: # 2 másodpercenként
+        print(last_time)
+        last_time = global_time
 
 
 app.run()

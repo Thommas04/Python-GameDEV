@@ -34,7 +34,9 @@ camera.fov = 60 # default [ field of view ]
 
 # [ Lights ]-----------------------------------------------------------------------------------------------------------[]
 
-L1 = PointLight(y = -2, z = 100, color = color.rgb(10,10,10), scale = 1000)
+#L1 = PointLight(shadows = True, y = -2, z = 100, color = color.rgb(10,10,10), scale = 1000)
+
+PointLight(shadows = True, scale = 1, x = 0, y = 0, z = 1, color = color.rgba(0, 255, 255, 1000))
 
 xx = 10
 def light():
@@ -45,7 +47,7 @@ def light():
 
     invoke(light, delay = 0.1)
 
-light()
+#light()
 
 #L2 = PointLight(y = -5, z = 100, color = color.blue, scale = 1000)
 #L3 = PointLight(y = -5, z = 10, color = color.blue, scale = 100)
