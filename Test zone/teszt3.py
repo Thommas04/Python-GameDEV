@@ -1,42 +1,37 @@
-
 from ursina import *
-from ursina import CubicBezier
+from ursina.prefabs.platformer_controller_2d import PlatformerController2d
+from random import randint
 app = Ursina()
-
-camera.orthographic = True
-camera.fov = 16
-camera.position = (9, 6)
-window.color = color.black
-
-i = 0
-for e in dir(curve):
+ground = Entity(model='cube',scale=(15,1,1),collider='box')
+next_platform_y = 4
+player = PlatformerController2d(scale_y=2, jump_height=4, x=3, y=2)
+score = Text("Score:"+str(floor(player.y)),position=(-.5,0.45))
+platforms = [ground]
+platforms_max = platforms[len(platforms)-1]
+platforms_min = platforms[0]
+def gen_platform(x,y):
+    x = randint((x-5),(x+5))
+    while abs(x) > 6:
+        x = randint((x-5),(x+5))
+    platforms.append(Entity(model='cube',scale=(2,1,1),position=(x,y,0),collider='box'))
+def game_over():
+    Text("Game Over")
+    application.pause()
+def update():
+    global platforms_max,next_platform_y
+    camera.y = player.y
+    score.text = "Score:"+str(floor(player.y))
     try:
-        item = getattr(curve, e)
-        print(item.__name__, ':', item(.75))
-        curve_renderer = Entity(
-            model=Mesh(vertices=[Vec3(i / 31, item(i / 31), 0) for i in range(32)], mode='line', thickness=2),
-            color=color.light_gray)
-        row = floor(i / 8)
-        curve_renderer.x = (i % 8) * 2.5
-        curve_renderer.y = row * 1.75
-        label = Text(parent=curve_renderer, text=item.__name__, scale=8, color=color.gray, y=-.1)
-        i += 1
-    except:
-        pass
-
-c = CubicBezier(0, .5, 1, .5)
-print('-----------', c.calculate(.23))
-
-window.exit_button.visible = False
-window.fps_counter.enabled = False
-'''
-These are used by Entity when animating, like this:
-
-e = Entity()
-e.animate_y(1, curve=curve.in_expo)
-
-e2 = Entity(x=1.5)
-e2.animate_y(1, curve=curve.CubicBezier(0,.7,1,.3))
-'''
-
+        platforms_max = platforms[len(platforms)-1]
+        platforms_min = platforms[0]
+    except IndexError:
+        game_over()
+        return
+    if held_keys['space']: player.jump()
+    if platforms_max.y - player.y < 6:
+        gen_platform(platforms[len(platforms)-1].x,next_platform_y)
+        next_platform_y += 4
+    if abs(platforms_min.y - player.y) > 13:
+        destroy(platforms[0])
+        del platforms[0]
 app.run()
