@@ -14,7 +14,7 @@ for i in range(60*1):
 
 class ParticleSystem(Entity):
     def __init__(self, **kwargs):
-        super().__init__(model=Mesh(vertices=points, mode='point', static=False, render_points_in_3d=True, thickness=.1), t=0, duration=1, **kwargs)
+        super().__init__(model=Mesh(vertices=points, mode='point', static=False, render_points_in_3d=True, thickness=.01), t=0, duration=1, **kwargs)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -32,7 +32,7 @@ class ParticleSystem(Entity):
 
 
 if __name__ == '__main__':
-    app = Ursina()
+    app = Ursina(vsync=False)
     window.color = color.black
 
     def input(key):

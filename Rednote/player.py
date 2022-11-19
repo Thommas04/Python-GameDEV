@@ -39,7 +39,7 @@ class Player(Entity):
             faceing = Vec3(0,-0.01,0)
 
         # A boxcast egy hitbox mely erzekeli, ha colliderrel rendelkezo entitasnak utkozott.
-        hit_info = boxcast(origin, faceing, ignore=(self, upper_body), distance=0.8, debug=True, thickness = (1,1))
+        hit_info = boxcast(origin, faceing, ignore=(self, upper_body), distance=0.8, debug=False, thickness = (1,1))
 
         if held_keys[runBIND]:
             movespeed = walkspeed + runspeed  # A movespeed egyenlo a jatekos es a kamera sebessegevel
