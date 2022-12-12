@@ -31,7 +31,7 @@ def place_all_objects():
                      )
 
     bigbox = Entity(model='plane',
-                    position=(0, 0, 1),
+                    position=(0, 0, 0.005),
                     scale=(200,0,-200),
                     texture='textures\\misc\\background',
                     rotation=(90, 0, 0),
