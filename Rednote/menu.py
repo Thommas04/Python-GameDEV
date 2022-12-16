@@ -41,6 +41,11 @@ exit_game_highlight = 'menu/main_menu/buttons/exit_game_highlight.png'
 loads_list = []
 enable_bit = True
 
+status = 'inmenu'
+
+def get_status():
+    return status
+
 def enable():
     global enable_bit
     enable_bit = True
@@ -119,10 +124,12 @@ def load_game_pressed(a):
         invoke(enable, delay=0.9)
 
 def new_game_pressed(a): # NEW GAME PRESSED
+    global status
     Menu.hide_play_menu(a)
     a.canvas.fade_out(value = 0, duration = 1)
     a.canvasbg.fade_out(value = 0, duration = 1)
     a.background.fade_out(value = 0, duration = 1)
+    status = 'ingame'
 
 def exit_game_pressed(a):
     global enable_bit

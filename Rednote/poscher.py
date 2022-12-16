@@ -12,5 +12,8 @@ def update():
         print(last_time)
         last_time = global_time
 
+from random import choice
+
+print(choice([3,2,3,5,6]))
 
 app.run()

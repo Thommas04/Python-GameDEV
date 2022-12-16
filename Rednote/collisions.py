@@ -22,5 +22,5 @@ def townlevel_collision():
         scale_x = abs(i[0][0] - i[1][0])
         scale_y = abs(i[0][1] - i[1][1])
 
-        print('gecii:', pos_x, pos_y)
+        print('coll:', pos_x, pos_y)
         coll_list.append(Entity(model='cube', collider='mesh', position=(pos_x, pos_y, col_z), scale=(scale_x, scale_y, 0.5), color=color.azure))

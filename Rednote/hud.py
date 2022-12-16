@@ -1,30 +1,30 @@
-
 from ursina import *
-import ursina.prefabs.trail_renderer
+from ursina.shaders import lit_with_shadows_shader
+from direct.filter.CommonFilters import CommonFilters
+
 app = Ursina()
+EditorCamera()
 
-window.color = color.black
-mouse.visible = False
-player = Entity()
-player.graphics = Entity(parent=player, scale=.1, model='circle')
-trail_renderer = TrailRenderer(parent=player, thickness=100, color=color.yellow, length=6)
+a = Entity(model='cube', y=1, shader=lit_with_shadows_shader)
 
-pivot = Entity(parent=player)
-trail_renderer = TrailRenderer(parent=pivot, x=.1, thickness=20, color=color.orange)
-trail_renderer = TrailRenderer(parent=pivot, y=1, thickness=20, color=color.orange)
-trail_renderer = TrailRenderer(parent=pivot, thickness=2, color=color.orange, alpha=.5, position=(.4,.8))
-trail_renderer = TrailRenderer(parent=pivot, thickness=2, color=color.orange, alpha=.5, position=(-.5,.7))
+filters = CommonFilters(base.win, base.cam)
 
-def update():
-    player.position = lerp(player.position, mouse.position*10, time.dt*4)
+#filters.setBloom(blend = (1,1,0.,0.1))
+#filters.setVolumetricLighting(caster = camera, numsamples= 10, density= 1, decay=0.1, exposure= 0.2)
+#filters.setBlurSharpen(amount = 0)
+#filters.setAmbientOcclusion()
+#filters.setGammaAdjust(1.5)
 
-    if pivot:
-        pivot.rotation_z -= 3
-        pivot.rotation_x -= 2
+#filters.setExposureAdjust(-1)
 
-def input(key):
-    if key == 'space':
-        destroy(pivot)
+filters.setHighDynamicRange()
+#filters.setSrgbEncode()
 
+
+
+Entity(model='plane', scale=10, color=color.gray,
+shader=lit_with_shadows_shader)
+pivot = Entity()
+DirectionalLight(parent=pivot, y=2, z=3, shadows=True, rotation=(45, -45, 45))
 
 app.run()
