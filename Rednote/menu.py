@@ -1,4 +1,7 @@
 
+# REDNOTE - MAIN MENU
+# [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] #
+
 from PIL import Image
 from ursina import *
 from functions import fileread
@@ -38,10 +41,16 @@ new_game_highlight = 'menu/main_menu/buttons/new_game_highlight.png'
 load_game_highlight = 'menu/main_menu/buttons/load_game_highlight.png'
 exit_game_highlight = 'menu/main_menu/buttons/exit_game_highlight.png'
 
+vignette = 'hud/background/vignette.png'
+
 loads_list = []
 enable_bit = True
 
 status = 'inmenu'
+
+def set_state(state):
+    global status
+    status = state
 
 def get_status():
     return status
@@ -213,6 +222,7 @@ class Menu(Entity):
         self.canvas = Entity(color = color.black, model= 'quad', scale=(1.920, 1.080, 0), position = [0, 0, 0.1], parent = camera.ui)
         self.canvasbg = Entity(texture = noise, model='quad', scale=(1.920, 1.080, 0), position=[0, 0, 0.08], parent=camera.ui)
         self.background = Entity(texture = morning_bg1, model='quad', scale=(1.920, 1.080, 0), position=[0, -0.0, 0], parent=camera.ui)
+        self.vignette = Entity(texture=vignette, model='quad', scale=(1.920, 1.080, 0), position=[0, -0.0, 0], parent=camera.ui)
 
         # Play menüben a cím
         self.menu_title = Text(text="", position=[-2, 0.46, 0], color=rgb(126, 126, 101), parent=camera.ui,font='fonts/pricedown.otf', scale=[1.7, 1.5, 0])

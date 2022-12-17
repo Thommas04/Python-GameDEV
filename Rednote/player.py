@@ -56,7 +56,7 @@ class Player(Entity):
             for i in range(0, len(list)):
                 list[i].x -= held_keys[move_leftBIND] * movespeed * time.dt
         else:
-            print(hit_info.distance)
+            pass #print(hit_info.distance)
 
 # [] ------------------------------------------------------------------------------------------------------------------[]
 

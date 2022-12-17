@@ -1,4 +1,7 @@
 
+# REDNOTE - OBJECTS
+# [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] #
+
 from ursina import *
 
 saloon_texture = 'textures/buildings/saloon.png'
@@ -16,7 +19,7 @@ def place_all_objects():
 
     bank = Entity(model = 'cube',
                   position = (20, -5, -0.05),
-                  scale = (16, 0, -9),
+                  scale = (48, 0, -27),
                   texture = 'textures\\buildings\\rustfort_bank',
                   rotation = (90, 0, 0),
                   doublesided = True

@@ -7,7 +7,7 @@ directions = np.array([Vec3(random.random()-.5,random.random()-.5,random.random(
 frames = []
 
 # simulate the particles once and cache the positions in a list.
-for i in range(60*1):
+for i in range(60):
     points += directions
     frames.append(copy(points))
 
