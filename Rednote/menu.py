@@ -225,7 +225,7 @@ class Menu(Entity):
         self.vignette = Entity(texture=vignette, model='quad', scale=(1.920, 1.080, 0), position=[0, -0.0, 0], parent=camera.ui)
 
         # Play menüben a cím
-        self.menu_title = Text(text="", position=[-2, 0.46, 0], color=rgb(126, 126, 101), parent=camera.ui,font='fonts/pricedown.otf', scale=[1.7, 1.5, 0])
+        self.menu_title = Text(text="", position=[-2, 0.46, 0], color=rgb(126, 126, 101), parent=camera.ui,font='fonts/CHINESER.TTF', scale=[1.7, 1.5, 0])
 
         # MAIN MENU # -------------------------------------------------------------------------------------------------
 
@@ -263,7 +263,7 @@ class Menu(Entity):
         self.exit_game_hightlighted = Entity(texture = exit_game_highlight, alpha = 0, model='quad', scale=(0.6, 0.35, 0), position=[0.50, -0.15, 0], parent=camera.ui)
 
         # Játék fülnél a bal lenti magyarázó szöveg
-        self.play_explaining_text = Text(text="", position=[-0.75, -0.44, 0], color = rgb(101, 101, 101), parent=camera.ui, font='fonts/pricedown.otf', scale = [1.4, 1.2, 0])
+        self.play_explaining_text = Text(text="", position=[-0.75, -0.44, 0], color = rgb(101, 101, 101), parent=camera.ui, font='fonts/CHINESER.TTF', scale = [1.4, 1.2, 0])
         self.play_explaining_text.fade_out(value=0.5, duration=0)
 
         # Címék a Játék fülnél -: Betöltés, Kilépés, Új játék
@@ -300,6 +300,8 @@ class Menu(Entity):
     # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     def show_menu(self): # megjeleníti az alap menüt
+        global status
+        status = 'inmenu'
         self.location = 'main'
         self.r.animate_position([-0.38, 0.35, 0], curve=curve.in_quart, duration=0.3, delay=0.80)
         self.e1.animate_position([-0.25, 0.35, 0], curve=curve.in_quart, duration=0.3, delay=0.75)

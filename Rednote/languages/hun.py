@@ -35,5 +35,13 @@ def set_language():
 
                  }
 
-    list_of_pack = [main_menu]
+    pause_menu = {'Resume' : 'Vissza',
+                  'Map' : 'Térkép',
+                  'Story' : 'Történet',
+                  'Help' : 'Segítség',
+                  'Settings' : 'Beállítások',
+                  'Quit' : 'Kilépés'
+                 }
+
+    list_of_pack = [main_menu, pause_menu]
     return list_of_pack

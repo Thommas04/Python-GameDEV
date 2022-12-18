@@ -35,5 +35,13 @@ def set_language():
 
                  }
 
-    list_of_pack = [main_menu]
+    pause_menu = {'Resume': 'Resume',
+                  'Map': 'Map',
+                  'Story': 'Story',
+                  'Help': 'Help',
+                  'Settings': 'Settings',
+                  'Quit': 'Quit Game'
+                  }
+
+    list_of_pack = [main_menu, pause_menu]
     return list_of_pack

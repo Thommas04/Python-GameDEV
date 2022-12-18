@@ -14,7 +14,7 @@ from anims import *
 
 app = Ursina()
 
-
+weapon_wheel = 'hud/weapon_wheel/weapon_wheel.png'
 
 
 EditorCamera()
@@ -41,6 +41,7 @@ camera.fov = 60 # default [ field of view ]
 L1 = PointLight(shadows = True, y = -2, z = 100, color = color.rgb(255,255,255), scale = 1000)
 
 #PointLight(shadows = True, scale = 1, x = 0, y = 0, z = 10, color = color.rgba(0, 255, 255, 1000))
+wheel = Entity(texture=weapon_wheel, alpha = 1, model='quad', scale=(0.8, 0.8, 0), position=[0,-0.02,0],parent=camera.ui)
 
 '''xx = 10
 def light():
@@ -72,7 +73,7 @@ def anim_loop(): # ez gyakorlatilag egy folyamatos rekurziv loop, ami az animaci
 anim_loop()
 
 place_all_objects() # lerakja az osszes modelt a fajlbol
-
+world_canvas = Entity(color = color.green, model = 'cube', collider = 'box', scale = (192,108,-0.05), position = (0,0,.1), tag = 'canvas')
 townlevel_collision()
 
 # []-------------------------------------------------------------------------------------------------------------------[]
