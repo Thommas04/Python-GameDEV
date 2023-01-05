@@ -4,8 +4,18 @@
 
 from ursina import *
 
+# WEAPON WHEEL # ---------------------------------------------------*
+
 weapon_wheel = 'hud/weapon_wheel/weapon_wheel.png'
 wheelbar_selected = 'hud/weapon_wheel/wheel_choosen.png'
+
+# HUD # ------------------------------------------------------------*
+
+minimap = 'hud/hud_widgets/minimap/minimap_frame.png'
+core_frame_spritesheet = 'hud/hud_widgets/cores/core_frame_sheet.png'
+core_spritesheet = 'hud/hud_widgets/cores/core_sheet.png'
+core_bg_spritesheet = 'hud/hud_widgets/cores/core_bg_sheet.png'
+
 
 # [ Vertices and Triangles ] ------------------------------------------------------------------------------------------[]
 
@@ -142,4 +152,190 @@ class WeaponWheel(Entity):
         self.pause_menu.filters.setBlurSharpen(amount=1)
         for i in self.weapon_wheel_list:
             i.disable()
+
+#########################################################################################################################
+
+class HUD(Entity):
+
+    def anim_cores(self, player_stats):
+
+        # -> health_core <-
+
+        health_stat = player_stats.get('health')
+        energy_stat = player_stats.get('energy')
+        power_stat  = player_stats.get('power')
+        hunger_stat = player_stats.get('hunger')
+        thirst_stat = player_stats.get('thirst')
+
+        health_core_stat = player_stats.get('health_core')
+        energy_core_stat = player_stats.get('energy_core')
+        power_core_stat = player_stats.get('power_core')
+        hunger_core_stat = player_stats.get('hunger_core')
+        thirst_core_stat = player_stats.get('thirst_core')
+
+        if health_stat == 100:
+            he_efix = 1
+        else: he_efix = 0
+        if energy_stat == 100:
+            e_efix = 1
+        else: e_efix = 0
+        if power_stat == 100:
+            p_efix = 1
+        else: p_efix = 0
+        if hunger_stat == 100:
+            hu_efix = 1
+        else: hu_efix = 0
+        if thirst_stat == 100:
+            t_efix = 1
+        else: t_efix = 0
+
+
+        if health_core_stat == 50:
+            he_core_efix = 1
+        else: he_core_efix = 0
+        if energy_core_stat == 50:
+            e_core_efix = 1
+        else: e_core_efix = 0
+        if power_core_stat == 50:
+            p_core_efix = 1
+        else: p_core_efix = 0
+        if hunger_core_stat == 50:
+            hu_core_efix = 1
+        else: hu_core_efix = 0
+        if thirst_core_stat == 50:
+            t_core_efix = 1
+        else: t_core_efix = 0
+
+
+        self.health_coreframe_anim.tile_coordinate = [(9 - (health_stat % 10 - he_efix)), (health_stat // 10) - he_efix]
+        self.energy_coreframe_anim.tile_coordinate = [(9 - (energy_stat % 10 - e_efix)), (energy_stat // 10) - e_efix]
+        self.power_coreframe_anim.tile_coordinate  = [(9 - (power_stat % 10  - p_efix)),  (power_stat // 10)  - p_efix]
+        self.hunger_coreframe_anim.tile_coordinate = [(9 - (hunger_stat % 10 - hu_efix)), (hunger_stat // 10) - hu_efix]
+        self.thirst_coreframe_anim.tile_coordinate = [(9 - (thirst_stat % 10 - t_efix)), (thirst_stat // 10) - t_efix]
+
+        self.health_core_bg_anim.tile_coordinate = [health_core_stat - he_core_efix,0]
+        self.energy_core_bg_anim.tile_coordinate = [energy_core_stat - e_core_efix, 0]
+        self.power_core_bg_anim.tile_coordinate = [power_core_stat - p_core_efix, 0]
+        self.hunger_core_bg_anim.tile_coordinate = [hunger_core_stat - hu_core_efix, 0]
+        self.thirst_core_bg_anim.tile_coordinate = [thirst_core_stat - t_core_efix, 0]
+
+    def __init__(self, language_file, player_stats):
+        self.player_stats = player_stats
+        self.minimap = Entity(texture = minimap, model = 'quad', position = (-0.68, -0.32, 0), scale = (0.4, 0.4, 0), alpha = 0, parent = camera.ui)
+
+        # -------------------------------------------------------------------------------------------------------------
+        # CORE GRAPHICS
+
+        self.health_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.8255, -0.2285, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5,1], tile_coordinate = [0,0])
+        self.energy_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.768, -0.178, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [1, 0])
+        self.power_core  = Entity(texture = core_spritesheet, model = 'quad', position = (-0.685, -0.161, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [2, 0])
+        self.hunger_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.6, -0.178, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [3, 0])
+        self.thirst_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.541, -0.2285, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5,1], tile_coordinate = [4,0])
+
+
+        # -> CORE FRAMES <- #
+
+        self.health_coreframe_anim = Entity(texture = core_frame_spritesheet, model = 'quad', position = (self.health_core.x + 0.0005, self.health_core.y + 0.001, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [10,10])
+        self.energy_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.energy_core.x + 0.0005, self.energy_core.y + 0.001, 0), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
+        self.power_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.power_core.x + 0.0005, self.power_core.y + 0.001, 0), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
+        self.hunger_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.hunger_core.x + 0.0005, self.hunger_core.y + 0.001, 0), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
+        self.thirst_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.thirst_core.x + 0.0005, self.thirst_core.y + 0.001, 0), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
+
+        self.health_coreframe_anim.tile_coordinate = [0,9]
+        self.energy_coreframe_anim.tile_coordinate = [0, 9]
+        self.power_coreframe_anim.tile_coordinate = [0, 9]
+        self.hunger_coreframe_anim.tile_coordinate = [0, 9]
+        self.thirst_coreframe_anim.tile_coordinate = [0, 9]
+
+        # -------------------------------------------------------------------------------------------------------------
+        # CORE BG SHEET
+
+        self.health_core_bg_anim = Entity(texture = core_bg_spritesheet, model = 'quad', position = (self.health_core.x + 0.0005, self.health_core.y + 0.0005, 0.1), alpha = 0, parent = camera.ui, tileset_size = [50, 1], scale = (0.029,0.025))
+        self.energy_core_bg_anim = Entity(texture = core_bg_spritesheet, model = 'quad', position = (self.energy_core.x + 0.0005, self.energy_core.y + 0.0015, 0.1), alpha = 0, parent = camera.ui, tileset_size = [50, 1], scale = (0.038,0.038))
+        self.power_core_bg_anim = Entity(texture = core_bg_spritesheet, model = 'quad', position = (self.power_core.x + 0.0005, self.power_core.y + 0.001, 0.1), alpha = 0, parent = camera.ui, tileset_size = [50, 1], scale = (0.03,0.021))
+        self.hunger_core_bg_anim = Entity(texture = core_bg_spritesheet, model = 'quad', position = (self.hunger_core.x + 0.0005, self.hunger_core.y + 0.002, 0.1), alpha = 0, parent = camera.ui, tileset_size = [50, 1], scale = (0.045,0.036))
+        self.thirst_core_bg_anim = Entity(texture = core_bg_spritesheet, model = 'quad', position = (self.thirst_core.x + 0.0005, self.thirst_core.y + 0.001, 0.1), alpha = 0, parent = camera.ui, tileset_size = [50, 1], scale = (0.038,0.033))
+
+        # 0,0 - Bal alsó
+        # 9,4 - jobb felső
+
+        self.health_core_bg_anim.tile_coordinate = [9, 4]
+        self.energy_core_bg_anim.tile_coordinate = [9, 4]
+        self.power_core_bg_anim.tile_coordinate = [9, 4]
+        self.hunger_core_bg_anim.tile_coordinate = [9, 4]
+        self.thirst_core_bg_anim.tile_coordinate = [9, 4]
+
+
+        # //////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+
+
+    def show_hud(self):
+        self.minimap.fade_in(value=0.9, duration=0.4, delay = 0.1)
+
+        self.health_core.fade_in(value=1, duration=0.3, delay=0.02)
+        self.energy_core.fade_in(value=1, duration=0.3, delay=0.02)
+        self.power_core.fade_in(value=1, duration=0.3, delay=0.02)
+        self.hunger_core.fade_in(value=1, duration=0.3, delay=0.02)
+        self.thirst_core.fade_in(value=1, duration=0.3, delay=0.02)
+
+        self.health_coreframe_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+        self.energy_coreframe_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+        self.power_coreframe_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+        self.hunger_coreframe_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+        self.thirst_coreframe_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+
+        self.health_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+        self.energy_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+        self.power_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+        self.hunger_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+        self.thirst_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
+
+
+    def hide_hud(self):
+        self.minimap.fade_in(value=0, duration=0.12, delay = 0.05)
+
+        self.health_core.fade_in(value=0, duration=0.12, delay = 0.05)
+        self.energy_core.fade_in(value=0, duration=0.12, delay=0.05)
+        self.power_core.fade_in(value=0, duration=0.12, delay=0.05)
+        self.hunger_core.fade_in(value=0, duration=0.12, delay=0.05)
+        self.thirst_core.fade_in(value=0, duration=0.12, delay=0.05)
+
+        self.health_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.energy_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.power_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.hunger_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.thirst_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
+
+        self.health_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.energy_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.power_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.hunger_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.thirst_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
+
+    def send_player_stats(self, player_stats):
+        self.player_stats = player_stats
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

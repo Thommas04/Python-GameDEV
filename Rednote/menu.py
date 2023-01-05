@@ -132,13 +132,14 @@ def load_game_pressed(a):
         enable_bit = False
         invoke(enable, delay=0.9)
 
-def new_game_pressed(a): # NEW GAME PRESSED
+def new_game_pressed(self): # NEW GAME PRESSED
     global status
-    Menu.hide_play_menu(a)
-    a.canvas.fade_out(value = 0, duration = 1)
-    a.canvasbg.fade_out(value = 0, duration = 1)
-    a.background.fade_out(value = 0, duration = 1)
+    Menu.hide_play_menu(self)
+    self.canvas.fade_out(value = 0, duration = 1)
+    self.canvasbg.fade_out(value = 0, duration = 1)
+    self.background.fade_out(value = 0, duration = 1)
     status = 'ingame'
+    self.hud.show_hud()
 
 def exit_game_pressed(a):
     global enable_bit
@@ -206,10 +207,11 @@ def exit_game_exit(self):
 # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
 class Menu(Entity):
-    def __init__(self, language_file):
+    def __init__(self, language_file, hud):
         self.location = 'main'
 
         self.language_file = language_file
+        self.hud = hud
 
         self.pos_letters = [[-0.38, 0.35, 0],[-0.25, 0.35, 0],[-0.13, 0.35, 0],[0.01, 0.35, 0],[0.15, 0.35, 0],[0.28, 0.35, 0],[0.4, 0.35, 0]]
         self.verts = [(0, 0, 0), (2, 0, 0), (0, 1, 0), (0, 1, 0)]

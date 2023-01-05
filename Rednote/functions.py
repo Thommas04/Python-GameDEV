@@ -20,7 +20,7 @@ def input(key):
         try:
             print("(", round(mouse.world_point.x,2),", ", round(mouse.world_point.y,2) ,", ", 0 , "),", sep = "")
             Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -0.001 ), scale = 10, text = str(round(mouse.world_point.x,2)) + " / " + str(round(mouse.world_point.y,2)))
-            Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.1, world_position = (mouse.world_point.x, mouse.world_point.y, 0 )  )
+            Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.005, world_position = (mouse.world_point.x, mouse.world_point.y, 0 )  )
         except: pass
 
 # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
