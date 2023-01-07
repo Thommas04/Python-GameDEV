@@ -1,4 +1,4 @@
-from ursina import *
+from modules.ursina import *
 
 class Inventory(Entity):
     def __init__(self, **kwargs):
