@@ -17,12 +17,11 @@ def place_all_objects():
                     doublesided = True
                     )
 
-    bank = Entity(model = 'cube',
-                  position = (20, -5, -0.05),
-                  scale = (48, 0, -27),
-                  texture = 'textures\\buildings\\rustfort_bank',
-                  rotation = (90, 0, 0),
-                  doublesided = True
+    bank = Entity(model = 'quad',
+                  position = (20, -5, -0.1),
+                  scale = (25, 16.5, 0),
+                  texture = 'textures/buildings/rustfort_bank',
+                  rotation = (0, 0, 0),
                   )
     '''
     general_store = Entity(model='plane',

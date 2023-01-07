@@ -12,6 +12,15 @@ from pynput.keyboard import Key, Controller
 
 pausemenu_bg = 'menu/pause_menu/backgrounds/pause_menu_bg.png'
 
+# CLOCK
+
+clock_hours_spritesheet = 'menu/pause_menu/clock/clock_hours_sheet.png'
+clock_minutes_spritesheet = 'menu/pause_menu/clock/clock_minutes_sheet.png'
+pocketwatch_bg = 'menu/pause_menu/clock/pocketwatch.png'
+
+
+# --------------------------------------------
+
 pause_menu_opened = False
 game_blured = False
 paused = False
@@ -22,6 +31,25 @@ def get_pausemenu_state():
     return paused
 
 class PauseMenu(Entity):
+    def anim_clock(self, mins, hrs):
+
+        if mins == 0:
+            self.hours_efix = 0
+        if mins == 15:
+            self.hours_efix = 1
+        if mins == 30:
+            self.hours_efix = 2
+        if mins == 45:
+            self.hours_efix = 3
+
+        hours = (hrs * 4) + self.hours_efix
+
+        self.hours_spritesheet.tile_coordinate = [hours, 0]
+        self.minutes_spritesheet.tile_coordinate = [mins , 0]
+
+        print('megyek')
+
+    # ///////////////////////////////////////////////////
 
     def resume(self):
         keyboard.press(Key.esc)
@@ -68,7 +96,9 @@ class PauseMenu(Entity):
         self.main_menu = main_menu
         self.hud = hud
         self.language_file = language_file
-        self.pause_menu_bg = Entity(texture=pausemenu_bg, alpha=0, scale=(0.68, 1.08, -0.12), position=[-2, -0.040, 0], model='quad', collider='box', parent=camera.ui)
+        self.pause_menu_bg = Entity(texture=pausemenu_bg, alpha=0, scale=(0.68, 1.08, -0.12), position=[-2, -0.040, 0], model='quad', parent=camera.ui)
+
+        self.hours_efix = 0
 
         self.filters = CommonFilters(base.win, base.cam)
         self.filters.setBlurSharpen(amount=0)
@@ -91,6 +121,14 @@ class PauseMenu(Entity):
         self.settings_click = Entity(alpha = 0, rotation=(0, 0, -6), scale=(0.2, 0.065, -0.12), origin=(0, 0), position=self.settings_txt.position, model='quad', collider='box', parent=camera.ui, on_click=Func(PauseMenu.open_settings, self), on_mouse_enter=Func(PauseMenu.on_hover, self, self.settings_txt), on_mouse_exit=Func(PauseMenu.on_leave, self, self.settings_txt))
         self.quit_click = Entity(alpha = 0, rotation=(0, 0, -6), scale=(0.2, 0.065, -0.12), origin=(0, 0), position=self.quit_txt.position, model='quad', collider='box', parent=camera.ui, on_click=Func(PauseMenu.open_quit, self), on_mouse_enter=Func(PauseMenu.on_hover, self, self.quit_txt), on_mouse_exit=Func(PauseMenu.on_leave, self, self.quit_txt))
 
+        ################################################################################################################
+        # POCKET WATCH ------------------------------------------------------------------------------------------
+
+        self.pocket_watch_bg = Entity(texture = pocketwatch_bg, model = 'quad', position = (-0.72, 0.35, -0.1), scale = (0.3, 0.3, 0), alpha = 0, parent = camera.ui)
+
+        self.hours_spritesheet = Entity(texture = clock_hours_spritesheet, model = 'quad', position = (self.pocket_watch_bg.position.x - 0.005, self.pocket_watch_bg.position.y - 0.025, -0.1), scale=(0.11, 0.11, 0), alpha = 0, parent = camera.ui, tileset_size=[48, 1], tile_coordinate = [25, 0])
+        self.minutes_spritesheet = Entity(texture = clock_minutes_spritesheet, model = 'quad', position = (self.pocket_watch_bg.position.x - 0.005, self.pocket_watch_bg.position.y - 0.025, -0.1), scale=(0.16, 0.16, 0), alpha = 0, parent = camera.ui, tileset_size=[60, 1], tile_coordinate = [15, 0])
+
     # Menü kinyitása
     def show_menu(self):
         global pause_menu_opened, paused
@@ -100,6 +138,10 @@ class PauseMenu(Entity):
 
         self.pause_menu_bg.animate_position([-0.55, -0.040, 0], curve=curve.linear, duration=0.3, delay=0.01)
         self.pause_menu_bg.fade_in(value=0.9, duration=0.3, delay = 0.01)
+
+        self.pocket_watch_bg.fade_in(value=0.7, duration=0.3, delay = 0.01)
+        self.hours_spritesheet.fade_in(value=0.9, duration=0.3, delay = 0.01)
+        self.minutes_spritesheet.fade_in(value=0.9, duration=0.3, delay=0.01)
 
         ################################################################################################################
         # SHOW TEXTS Handling ------------------------------------------------------------------------------------------
@@ -153,6 +195,10 @@ class PauseMenu(Entity):
 
         self.pause_menu_bg.fade_in(value=0, duration=0.25, delay = 0.01)
         self.pause_menu_bg.animate_position([-2, -0.040, 0], curve=curve.in_quart, duration=0.25, delay=0.01)
+
+        self.pocket_watch_bg.fade_in(value=0, duration=0.1, delay=0.01)
+        self.hours_spritesheet.fade_in(value=0, duration=0.1, delay=0.01)
+        self.minutes_spritesheet.fade_in(value=0, duration=0.1, delay=0.01)
 
         ################################################################################################################
         # HIDE TEXTS Handling ------------------------------------------------------------------------------------------

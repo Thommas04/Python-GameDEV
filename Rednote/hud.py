@@ -9,12 +9,24 @@ from ursina import *
 weapon_wheel = 'hud/weapon_wheel/weapon_wheel.png'
 wheelbar_selected = 'hud/weapon_wheel/wheel_choosen.png'
 
+# ICONS
+
+spencer_carbine_icon = 'hud/weapon_wheel_items/rifle_icon.png'
+hand_icon = 'hud/weapon_wheel_items/hand_icon.png'
+colt_icon = 'hud/weapon_wheel_items/revolver_icon.png'
+
 # HUD # ------------------------------------------------------------*
 
 minimap = 'hud/hud_widgets/minimap/minimap_frame.png'
 core_frame_spritesheet = 'hud/hud_widgets/cores/core_frame_sheet.png'
 core_spritesheet = 'hud/hud_widgets/cores/core_sheet.png'
 core_bg_spritesheet = 'hud/hud_widgets/cores/core_bg_sheet.png'
+
+# INVENTORY # ------------------------------------------------------------*
+
+inventory_background = 'hud/inventory/widgets/inventory_bg.png'
+inventory_buttons_spritesheet = 'hud/inventory/widgets/inventory_buttons_sheet.png'
+inventory_selected_tile = 'hud/inventory/widgets/inventory_selected_tile.png'
 
 
 # [ Vertices and Triangles ] ------------------------------------------------------------------------------------------[]
@@ -41,95 +53,64 @@ tris6 = [0, 1, 2, 0, 2, 4, 4, 2, 3]
 
 # [ HUD CLASS ] -------------------------------------------------------------------------------------------------------[]
 
+# WEAPON WHEEL #
+
 class WeaponWheel(Entity):
-    def weaponbars_click(self, type):
-        if type == 'super':
-            print('main c')
-        if type == 'upper_left':
-            print('upper_left_click')
-        if type == 'upper_right':
-            print('upper_right_click')
-
-        if type == 'right':
-            print('r c')
-        if type == 'lower_right':
-            print('lr c')
-        if type == 'down':
-            print('d c')
-        if type == 'lower_left':
-            print('ll c')
-        if type == 'left':
-            print('l c')
-
     def weaponbars_hover(self, type):
-        if type == 'super':
+        if type == 'up':
             self.wheelbar_selector.rotation = (0, 0, 90)
             self.wheelbar_selector.scale = (0.2, 0.3, 0)
             self.wheelbar_selector.position = (0, 0.29, -0.1)
+            self.selected_tile = type
         if type == 'upper_left':
             self.wheelbar_selector.rotation = (0, 0, 48)
             self.wheelbar_selector.scale = (0.2, 0.3, 0)
             self.wheelbar_selector.position = (-0.215, 0.2, -0.1)
+            self.selected_tile = type
         if type == 'upper_right':
             self.wheelbar_selector.rotation = (0, 0, -47)
             self.wheelbar_selector.scale = (-0.2, -0.3, 0)
             self.wheelbar_selector.position = (0.215, 0.215, -0.1)
-
+            self.selected_tile = type
 
         if type == 'right':
             self.wheelbar_selector.rotation = (0, 0, 0)
             self.wheelbar_selector.scale = (-0.2, -0.3, 0)
             self.wheelbar_selector.position = (0.32, -0.02, -0.1)
+            self.selected_tile = type
         if type == 'lower_right':
             self.wheelbar_selector.rotation = (0, 0, 45)
             self.wheelbar_selector.scale = (-0.2, -0.3, 0)
             self.wheelbar_selector.position = (0.237, -0.25, -0.1)
+            self.selected_tile = type
         if type == 'down':
             self.wheelbar_selector.rotation = (0, 0, 90)
             self.wheelbar_selector.scale = (-0.2, -0.3, 0)
             self.wheelbar_selector.position = (0.014, -0.346, -0.1)
+            self.selected_tile = type
         if type == 'lower_left':
             self.wheelbar_selector.rotation = (0, 0, -45)
             self.wheelbar_selector.scale = (0.2, 0.3, 0)
             self.wheelbar_selector.position = (-0.215, -0.26, -0.1)
+            self.selected_tile = type
         if type == 'left':
             self.wheelbar_selector.rotation = (0,0,0)
             self.wheelbar_selector.scale = (0.2, 0.3, 0)
             self.wheelbar_selector.position = (-0.32, -0.035, -0.1)
+            self.selected_tile = type
 
         self.wheelbar_selector.fade_in(value=1, duration=0.15, delay = 0)
 
-    def weaponbars_leave(self, type):
-        if type == 'super':
-            print('main leave')
-        if type == 'upper_left':
-            pass
-        if type == 'upper_right':
-            print('leaveeeee')
-
-        if type == 'right':
-            print('r leave')
-        if type == 'lower_right':
-            print('lr leave')
-        if type == 'down':
-            print('d leave')
-        if type == 'lower_left':
-            print('ll leave')
-        if type == 'left':
-            print('l leave')
-
-
-
     def __init__(self, language_file, pause_menu):
-        self.weapon_wheel_super = Entity(collider='mesh', model=Mesh(vertices=verts00, triangles=tris00, thickness=4), position = (0,-0.01,0), scale = (0.8,0.8,0.4), alpha = 0, parent = camera.ui, on_click = Func(WeaponWheel.weaponbars_click, self, 'super'), on_mouse_enter = Func(WeaponWheel.weaponbars_hover, self, 'super'), on_mouse_exit = Func(WeaponWheel.weaponbars_leave, self, 'super'))
-        self.weapon_wheel_upperleft = Entity(collider='mesh', model=Mesh(vertices=verts01, triangles=tris01, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_click=Func(WeaponWheel.weaponbars_click, self, 'upper_left'), on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'upper_left'), on_mouse_exit=Func(WeaponWheel.weaponbars_leave, self, 'upper_left'))
-        self.weapon_wheel_upperright = Entity(collider='mesh', model=Mesh(vertices=verts02, triangles=tris02, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_click=Func(WeaponWheel.weaponbars_click, self, 'upper_right'), on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'upper_right'), on_mouse_exit=Func(WeaponWheel.weaponbars_leave, self, 'upper_right'))
+        self.weapon_wheel_super = Entity(collider='mesh', model=Mesh(vertices=verts00, triangles=tris00, thickness=4), position = (0,-0.01,0), scale = (0.8,0.8,0.4), alpha = 0, parent = camera.ui, on_mouse_enter = Func(WeaponWheel.weaponbars_hover, self, 'up'))
+        self.weapon_wheel_upperleft = Entity(collider='mesh', model=Mesh(vertices=verts01, triangles=tris01, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'upper_left'))
+        self.weapon_wheel_upperright = Entity(collider='mesh', model=Mesh(vertices=verts02, triangles=tris02, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'upper_right'))
 
-        self.weapon_wheel_right = Entity(collider='mesh', model=Mesh(vertices=verts2, triangles=tris2, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_click=Func(WeaponWheel.weaponbars_click, self, 'right'), on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'right'), on_mouse_exit=Func(WeaponWheel.weaponbars_leave, self, 'right'))
-        self.weapon_wheel_lowerright = Entity(collider='mesh', model=Mesh(vertices=verts3, triangles=tris3, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_click=Func(WeaponWheel.weaponbars_click, self, 'lower_right'), on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'lower_right'), on_mouse_exit=Func(WeaponWheel.weaponbars_leave, self, 'lower_right'))
-        self.weapon_wheel_down = Entity(collider='mesh', model=Mesh(vertices=verts4, triangles=tris4, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_click=Func(WeaponWheel.weaponbars_click, self, 'down'), on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'down'), on_mouse_exit=Func(WeaponWheel.weaponbars_leave, self, 'down'))
-        self.weapon_wheel_lowerleft = Entity(collider='mesh', model=Mesh(vertices=verts5, triangles=tris5, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_click=Func(WeaponWheel.weaponbars_click, self, 'lower_left'), on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'lower_left'), on_mouse_exit=Func(WeaponWheel.weaponbars_leave, self, 'lower_left'))
-        self.weapon_wheel_left = Entity(collider='mesh', model=Mesh(vertices=verts6, triangles=tris6, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_click=Func(WeaponWheel.weaponbars_click, self, 'left'), on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'left'), on_mouse_exit=Func(WeaponWheel.weaponbars_leave, self, 'left'))
+        self.weapon_wheel_right = Entity(collider='mesh', model=Mesh(vertices=verts2, triangles=tris2, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'right'))
+        self.weapon_wheel_lowerright = Entity(collider='mesh', model=Mesh(vertices=verts3, triangles=tris3, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'lower_right'))
+        self.weapon_wheel_down = Entity(collider='mesh', model=Mesh(vertices=verts4, triangles=tris4, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'down'))
+        self.weapon_wheel_lowerleft = Entity(collider='mesh', model=Mesh(vertices=verts5, triangles=tris5, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'lower_left'))
+        self.weapon_wheel_left = Entity(collider='mesh', model=Mesh(vertices=verts6, triangles=tris6, thickness=4), position=(0, -0.01, 0), scale=(0.8, 0.8, 0.4), alpha=0, parent=camera.ui, on_mouse_enter=Func(WeaponWheel.weaponbars_hover, self, 'left'))
 
         self.weapon_wheel_list = [self.weapon_wheel_super, self.weapon_wheel_upperleft, self.weapon_wheel_upperright, self.weapon_wheel_right, self.weapon_wheel_lowerright, self.weapon_wheel_down, self. weapon_wheel_lowerleft, self. weapon_wheel_left]
         for i in self.weapon_wheel_list:
@@ -140,22 +121,56 @@ class WeaponWheel(Entity):
         self.language_file = language_file
         self.pause_menu = pause_menu
         self.wheel = Entity(texture=weapon_wheel, alpha = 0, model='quad', scale=(0.8, 0.8, 0), position=[0,-0.02,0],parent=camera.ui)
+        self.selected_tile = 'right'
+
+        # -----------------------------------------------------
+        # Icons
+
+        self.up_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0, 0.245, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+        self.upper_left_icon = Entity(tag = 'colt', rotation = (0,0,-40), texture = colt_icon, model = 'quad', position = (-0.162, 0.175, -0.1), scale = (0.165, 0.165, 0), alpha = 0, parent=camera.ui)
+        self.upper_right_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.2, 0.15, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+
+        self.right_icon = Entity(tag = 'hand', texture = hand_icon, model = 'quad', position = (0.275, -0.022, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+        self.left_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (-0.26, -0.03, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+        self.lower_left_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (-0.17, -0.22, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+        self.lower_right_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.2, -0.21, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+        self.down_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.02, -0.295, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+
+
+        self.wheel_icons_list = [self.right_icon, self.up_icon, self.upper_left_icon, self.upper_right_icon, self.left_icon, self.lower_left_icon, self.lower_right_icon, self.down_icon]
+
+    def get_back_selected_wheeltile(self):
+        return self.selected_tile
+
 
     def show_weaponwheel(self):
-        self.wheel.fade_in(value=1, duration=0.15, delay = 0)
+        self.wheel.fade_in(value=0.85, duration=0.15, delay = 0)
         self.pause_menu.filters.setBlurSharpen(amount=0)
         for i in self.weapon_wheel_list:
             i.enable()
+        for icon in self.wheel_icons_list:
+            icon.fade_in(value=0.8, duration=0.15, delay = 0)
 
     def hide_weaponwheel(self):
         self.wheel.fade_in(value=0, duration=0.15, delay = 0)
         self.pause_menu.filters.setBlurSharpen(amount=1)
         for i in self.weapon_wheel_list:
             i.disable()
+        for icon in self.wheel_icons_list:
+            icon.fade_in(value=0, duration=0.15, delay = 0)
 
-#########################################################################################################################
+########################################################################################################################
+# HUD / CORES & Minimap #
 
 class HUD(Entity):
+
+    def show_death_screen(self):
+        pass
+
+    def hide_death_screen(self):
+        pass
+
+    # ------------------------------------------------------------------------------------------------------------------
 
     def anim_cores(self, player_stats):
 
@@ -221,25 +236,25 @@ class HUD(Entity):
 
     def __init__(self, language_file, player_stats):
         self.player_stats = player_stats
-        self.minimap = Entity(texture = minimap, model = 'quad', position = (-0.68, -0.32, 0), scale = (0.4, 0.4, 0), alpha = 0, parent = camera.ui)
+        self.minimap = Entity(texture = minimap, model = 'quad', position = (-0.68, -0.32, -0.05), scale = (0.4, 0.4, 0), alpha = 0, parent = camera.ui)
 
         # -------------------------------------------------------------------------------------------------------------
         # CORE GRAPHICS
 
-        self.health_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.8255, -0.2285, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5,1], tile_coordinate = [0,0])
-        self.energy_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.768, -0.178, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [1, 0])
-        self.power_core  = Entity(texture = core_spritesheet, model = 'quad', position = (-0.685, -0.161, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [2, 0])
-        self.hunger_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.6, -0.178, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [3, 0])
-        self.thirst_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.541, -0.2285, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5,1], tile_coordinate = [4,0])
+        self.health_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.8255, -0.2285, -0.05), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5,1], tile_coordinate = [0,0])
+        self.energy_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.768, -0.178, -0.05), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [1, 0])
+        self.power_core  = Entity(texture = core_spritesheet, model = 'quad', position = (-0.685, -0.161, -0.05), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [2, 0])
+        self.hunger_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.6, -0.178, -0.05), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [3, 0])
+        self.thirst_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.541, -0.2285, -0.05), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5,1], tile_coordinate = [4,0])
 
 
         # -> CORE FRAMES <- #
 
-        self.health_coreframe_anim = Entity(texture = core_frame_spritesheet, model = 'quad', position = (self.health_core.x + 0.0005, self.health_core.y + 0.001, 0), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [10,10])
-        self.energy_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.energy_core.x + 0.0005, self.energy_core.y + 0.001, 0), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
-        self.power_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.power_core.x + 0.0005, self.power_core.y + 0.001, 0), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
-        self.hunger_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.hunger_core.x + 0.0005, self.hunger_core.y + 0.001, 0), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
-        self.thirst_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.thirst_core.x + 0.0005, self.thirst_core.y + 0.001, 0), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
+        self.health_coreframe_anim = Entity(texture = core_frame_spritesheet, model = 'quad', position = (self.health_core.x + 0.0005, self.health_core.y + 0.001, -0.1), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [10,10])
+        self.energy_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.energy_core.x + 0.0005, self.energy_core.y + 0.001, -0.1), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
+        self.power_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.power_core.x + 0.0005, self.power_core.y + 0.001, -0.1), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
+        self.hunger_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.hunger_core.x + 0.0005, self.hunger_core.y + 0.001, -0.1), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
+        self.thirst_coreframe_anim = Entity(texture = core_frame_spritesheet, model='quad', position=(self.thirst_core.x + 0.0005, self.thirst_core.y + 0.001, -0.1), scale=(0.07, 0.07, 0), alpha=0, parent=camera.ui, tileset_size=[10, 10])
 
         self.health_coreframe_anim.tile_coordinate = [0,9]
         self.energy_coreframe_anim.tile_coordinate = [0, 9]
@@ -265,9 +280,14 @@ class HUD(Entity):
         self.hunger_core_bg_anim.tile_coordinate = [9, 4]
         self.thirst_core_bg_anim.tile_coordinate = [9, 4]
 
+        # -------------------------------------------------------------------------------------------------------------
+        # DEATH SCREEN
 
-        # //////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+        self.death_text
 
+
+
+    # //////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
     def show_hud(self):
         self.minimap.fade_in(value=0.9, duration=0.4, delay = 0.1)
@@ -314,6 +334,88 @@ class HUD(Entity):
 
     def send_player_stats(self, player_stats):
         self.player_stats = player_stats
+
+
+########################################################################################################################
+# INVENTORY #
+
+
+class Inventory(Entity):
+    def __init__(self, language_pack, **kwargs):
+        super().__init__(
+            parent = camera.ui,
+            model = 'quad',
+            texture = None,
+            texture_scale = (4,4),
+            scale = (.43, .43),
+            origin = (-.5, .5),
+            position = (-0.24,0.275),
+            color = color.color(0,0,.1,.9))
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+        self.language_pack = language_pack
+        self.background = Entity(texture = inventory_background, alpha = 1, scale = (0.62, 1.024, -0.12), position=[0, 0, 0], model='quad', parent=camera.ui)
+
+
+    # [] ------------------------------------------------------------------------------------------------------------- []
+
+    def find_free_spot(self): # Keres egy üres helyet, és visszadja az x, y koordinátáját.
+        for y in range(4):
+            for x in range(4):
+                grid_positions = [(int(e.x*self.texture_scale[0]), int(e.y*self.texture_scale[1])) for e in self.children]
+
+                if not (x,-y) in grid_positions:
+                    return x, y
+
+    # [] ------------------------------------------------------------------------------------------------------------- []
+
+    def append(self, item, x=0, y=0): # Hozzáad egy itemet
+        if len(self.children) >= 4*4: # Lefut, ha tele az inventory
+            print('inventory full')
+            return
+
+        x, y = self.find_free_spot() # De előtte keresni kel legy szabad helyet.
+
+        icon = Draggable( parent = self, model = 'quad', texture = item, color = color.white,
+            scale_x = 1 / self.texture_scale[0], scale_y = 1 / self.texture_scale[1], origin = (-.5,.5),
+            x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], z = -.5)
+
+        name = item.replace('_', ' ').title()
+
+        # [] --------------------------------------------------------------------------------------------------------- []
+
+        def drag():
+            icon.org_pos = (icon.x, icon.y)
+            icon.z -= .01   # azért, hogy a megragadott item a többi réteg felett legyen
+
+        def drop():
+            icon.x = int((icon.x + (icon.scale_x/2)) * 4) / 4
+            icon.y = int((icon.y - (icon.scale_y/2)) * 4) / 4
+            icon.z += .01
+
+            # Ha rossz helyre húzta kerüljön vissza az eredeti helyére.
+            if icon.x < 0 or icon.x >= 1 or icon.y > 0 or icon.y <= -1:
+                icon.position = (icon.org_pos)
+                return
+
+            # Ha a pozíció foglalt, cseréljenek helyet
+            for c in self.children:
+                if c == icon:
+                    continue
+
+                if c.x == icon.x and c.y == icon.y:
+                    c.position = icon.org_pos
+
+        icon.drag = drag
+        icon.drop = drop
+
+    def show_inventory(self):
+        pass
+
+    def hide_inventory(self):
+        pass
 
 
 

@@ -36,7 +36,7 @@ camera.fov = 60 # default [ field of view ]
 
 # [ Lights ]-----------------------------------------------------------------------------------------------------------[]
 
-#scene.fog_density = (100, 150)   # sets linear density start and end
+scene.fog_density = (100, 150)   # sets linear density start and end
 
 #L1 = PointLight(shadows = True, y = -2, z = 100, color = color.rgb(255,255,255), scale = 1000)
 
@@ -55,7 +55,7 @@ def light():
 
 #light()
 
-#L2 = PointLight(y = -5, z = 100, color = color.blue, scale = 1000)
+L2 = AmbientLight(y = -5, z = -100, color = color.blue, scale = 1000)
 #L3 = PointLight(y = -5, z = 10, color = color.blue, scale = 100)
 
 # [ Functions ]--------------------------------------------------------------------------------------------------------[]
