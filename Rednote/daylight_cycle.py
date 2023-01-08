@@ -5,11 +5,15 @@ class LightSystem():
     def __init__(self):
         self.amibent_light = AmbientLight(color = color.dark_gray)
 
-
     # A Value-t percekben kapjuk meg
     # 6:00 -> 360
 
     #SEASON SET
+
+    # SPRING
+    # SUMMER
+    # FALL
+    # WINTER
 
     def time_set(self, value):
         if value == 361:

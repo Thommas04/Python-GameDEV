@@ -15,6 +15,11 @@ spencer_carbine_icon = 'hud/weapon_wheel_items/rifle_icon.png'
 hand_icon = 'hud/weapon_wheel_items/hand_icon.png'
 colt_icon = 'hud/weapon_wheel_items/revolver_icon.png'
 
+# DEAD SCREEN # ------------------------------------------------------------*
+
+dead_screen_spritesheet = 'hud/death_screen/death_screen_sheet.png'
+
+
 # HUD # ------------------------------------------------------------*
 
 minimap = 'hud/hud_widgets/minimap/minimap_frame.png'
@@ -162,13 +167,52 @@ class WeaponWheel(Entity):
 ########################################################################################################################
 # HUD / CORES & Minimap #
 
+
 class HUD(Entity):
 
+    def delayed_static_show(self):
+        self.dead_screen_anim.play_animation('static_show')
+
+    def delayed_hide_deadscreen_bg(self):
+        # EZ TÖRTÉNIK HA A PLAYER MEGHAL, MAJD ÚJRAÉLED
+        # Statisztika mutató, rakja őt a kocsmába, ilyesmi
+
+        self.dead_screen_anim.alpha = 0
+        self.dead_screen_anim.play_animation('static_hide')
+        self.dead_screen_bg.fade_in(value=0, duration=1)
+        HUD.show_hud(self)
+
+        self.dead_screen_status = 'respawned'
+
+    def play_hide_deadscreen_anim(self):
+        self.dead_screen_anim.play_animation('hide_dead_screen')
+        invoke(HUD.delayed_hide_deadscreen_bg, self, delay=1)
+
+    def play_deadscreen_anim(self):
+        self.dead_screen_anim.alpha = 1
+        self.dead_screen_anim.play_animation('show_dead_screen')
+        invoke(HUD.delayed_static_show, self, delay=0.9)
+        self.dead_continue_text.text = self.language_file[2].get('Continue')
+        self.dead_continue_text.animate_color(rgb(101, 101, 101), duration = 1, delay = 1)
+        self.dead_continue_click.enable()
+
     def show_death_screen(self):
-        pass
+        self.dead_screen_bg.fade_in(value = 1, duration = 1.5, delay = 1)
+
+        invoke(HUD.play_deadscreen_anim,self, delay = 3)
+        HUD.hide_hud(self, 1.5)
 
     def hide_death_screen(self):
-        pass
+        self.dead_continue_text.text = ''
+        self.dead_continue_text.color = color.black
+        self.dead_continue_click.disable()
+        invoke(HUD.play_hide_deadscreen_anim, self, delay=2)
+
+
+    def dead_continue_hover(self):
+        self.dead_continue_text.color = rgb(125, 125, 125)
+    def dead_continue_leave(self):
+        self.dead_continue_text.color = rgb(101, 101, 101)
 
     # ------------------------------------------------------------------------------------------------------------------
 
@@ -235,8 +279,11 @@ class HUD(Entity):
         self.thirst_core_bg_anim.tile_coordinate = [thirst_core_stat - t_core_efix, 0]
 
     def __init__(self, language_file, player_stats):
+        self.language_file = language_file
         self.player_stats = player_stats
         self.minimap = Entity(texture = minimap, model = 'quad', position = (-0.68, -0.32, -0.05), scale = (0.4, 0.4, 0), alpha = 0, parent = camera.ui)
+
+        self.dead_screen_status = 'none'
 
         # -------------------------------------------------------------------------------------------------------------
         # CORE GRAPHICS
@@ -283,9 +330,16 @@ class HUD(Entity):
         # -------------------------------------------------------------------------------------------------------------
         # DEATH SCREEN
 
-        #self.death_text
+        self.dead_screen_bg = Entity(color = color.black, parent = camera.ui, position = (0,0,0), scale = (2,1,0), alpha = 0, model='quad')
+        self.dead_screen_anim = SpriteSheetAnimation(dead_screen_spritesheet, alpha = 0,parent = camera.ui, tileset_size=(30, 2), position = (0,0.12,-0.1), scale=(0.373, 0.177), fps = 30, animations={
+                'show_dead_screen': ((0, 0), (29, 0)),
+                'hide_dead_screen': ((0, 1), (29, 1)),
+                'static_hide': ((29, 1), (29, 1)),
+                'static_show': ((29, 0), (29, 0))})
 
-
+        self.dead_continue_text = Text(text = '', position=[0.74, -0.44, -0.01], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = [1.3, 1.1, 0])
+        self.dead_continue_click = Entity(alpha=0, scale=(0.15, 0.05, 0), position=[0.79, -0.448, 0], model='quad', collider='box', parent=camera.ui, on_click=Func(HUD.hide_death_screen, self), on_mouse_enter=Func(HUD.dead_continue_hover, self), on_mouse_exit=Func(HUD.dead_continue_leave, self))
+        self.dead_continue_click.disable()
 
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
@@ -311,26 +365,26 @@ class HUD(Entity):
         self.thirst_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
 
 
-    def hide_hud(self):
-        self.minimap.fade_in(value=0, duration=0.12, delay = 0.05)
+    def hide_hud(self, speed = 0.12):
+        self.minimap.fade_in(value=0, duration=speed, delay = 0.05)
 
-        self.health_core.fade_in(value=0, duration=0.12, delay = 0.05)
-        self.energy_core.fade_in(value=0, duration=0.12, delay=0.05)
-        self.power_core.fade_in(value=0, duration=0.12, delay=0.05)
-        self.hunger_core.fade_in(value=0, duration=0.12, delay=0.05)
-        self.thirst_core.fade_in(value=0, duration=0.12, delay=0.05)
+        self.health_core.fade_in(value=0, duration=speed, delay = 0.05)
+        self.energy_core.fade_in(value=0, duration=speed, delay=0.05)
+        self.power_core.fade_in(value=0, duration=speed, delay=0.05)
+        self.hunger_core.fade_in(value=0, duration=speed, delay=0.05)
+        self.thirst_core.fade_in(value=0, duration=speed, delay=0.05)
 
-        self.health_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
-        self.energy_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
-        self.power_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
-        self.hunger_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
-        self.thirst_coreframe_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.health_coreframe_anim.fade_in(value=0, duration=speed, delay=0.05)
+        self.energy_coreframe_anim.fade_in(value=0, duration=speed, delay=0.05)
+        self.power_coreframe_anim.fade_in(value=0, duration=speed, delay=0.05)
+        self.hunger_coreframe_anim.fade_in(value=0, duration=speed, delay=0.05)
+        self.thirst_coreframe_anim.fade_in(value=0, duration=speed, delay=0.05)
 
-        self.health_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
-        self.energy_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
-        self.power_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
-        self.hunger_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
-        self.thirst_core_bg_anim.fade_in(value=0, duration=0.12, delay=0.05)
+        self.health_core_bg_anim.fade_in(value=0, duration=speed, delay=0.05)
+        self.energy_core_bg_anim.fade_in(value=0, duration=speed, delay=0.05)
+        self.power_core_bg_anim.fade_in(value=0, duration=speed, delay=0.05)
+        self.hunger_core_bg_anim.fade_in(value=0, duration=speed, delay=0.05)
+        self.thirst_core_bg_anim.fade_in(value=0, duration=speed, delay=0.05)
 
     def send_player_stats(self, player_stats):
         self.player_stats = player_stats

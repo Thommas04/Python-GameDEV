@@ -43,5 +43,7 @@ def set_language():
                   'Quit': 'Quit Game'
                   }
 
-    list_of_pack = [main_menu, pause_menu]
+    death_screen = {'Continue' : 'Continue'}
+
+    list_of_pack = [main_menu, pause_menu, death_screen]
     return list_of_pack
