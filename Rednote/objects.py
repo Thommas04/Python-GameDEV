@@ -9,16 +9,8 @@ saloon_texture = 'textures/buildings/saloon.png'
 def place_all_objects():
     print('befogom a pofámat')
 
-    saloon = Entity(model = 'cube',
-                    position = (35, 2, -0.05),
-                    scale = (16, 0, -9),
-                    texture = saloon_texture,
-                    rotation = (90, 0, 0),
-                    doublesided = True
-                    )
-
     bank = Entity(model = 'quad',
-                  position = (20, -5, -0.1),
+                  position = (35, 15, -0.1),
                   scale = (25, 16.5, 0),
                   texture = 'textures/buildings/rustfort_bank',
                   rotation = (0, 0, 0),

@@ -8,6 +8,11 @@ from ursina import *
 
 weapon_wheel = 'hud/weapon_wheel/weapon_wheel.png'
 wheelbar_selected = 'hud/weapon_wheel/wheel_choosen.png'
+wheelbar_selector = 'hud/weapon_wheel/wheel_selected.png'
+
+# AMMO AND MONEY ICONS
+
+screen_icons = 'hud/hud_widgets/screen_icons/screen_icons.png'
 
 # ICONS
 
@@ -23,6 +28,8 @@ dead_screen_spritesheet = 'hud/death_screen/death_screen_sheet.png'
 # HUD # ------------------------------------------------------------*
 
 minimap = 'hud/hud_widgets/minimap/minimap_frame.png'
+minimap_background = 'hud/hud_widgets/minimap/minimap_bg.png'
+
 core_frame_spritesheet = 'hud/hud_widgets/cores/core_frame_sheet.png'
 core_spritesheet = 'hud/hud_widgets/cores/core_sheet.png'
 core_bg_spritesheet = 'hud/hud_widgets/cores/core_bg_sheet.png'
@@ -131,6 +138,9 @@ class WeaponWheel(Entity):
         # -----------------------------------------------------
         # Icons
 
+        self.tile_selected = Entity(texture = wheelbar_selector, rotation = (0,0,0), model = 'quad', position = (0.202, -0.021, -0.1), scale = (-0.25, -0.3, 0), alpha = 0, parent = camera.ui)
+
+
         self.up_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0, 0.245, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
         self.upper_left_icon = Entity(tag = 'colt', rotation = (0,0,-40), texture = colt_icon, model = 'quad', position = (-0.162, 0.175, -0.1), scale = (0.165, 0.165, 0), alpha = 0, parent=camera.ui)
         self.upper_right_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.2, 0.15, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
@@ -142,7 +152,7 @@ class WeaponWheel(Entity):
         self.down_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.02, -0.295, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
 
 
-        self.wheel_icons_list = [self.right_icon, self.up_icon, self.upper_left_icon, self.upper_right_icon, self.left_icon, self.lower_left_icon, self.lower_right_icon, self.down_icon]
+        self.wheel_icons_list = [self.right_icon, self.upper_left_icon]#, self.up_iconself.upper_right_icon, self.left_icon, self.lower_left_icon, self.lower_right_icon, self.down_icon]
 
     def get_back_selected_wheeltile(self):
         return self.selected_tile
@@ -150,14 +160,16 @@ class WeaponWheel(Entity):
 
     def show_weaponwheel(self):
         self.wheel.fade_in(value=0.85, duration=0.15, delay = 0)
+        self.tile_selected.fade_in(value=0.85, duration=0.15, delay = 0)
         self.pause_menu.filters.setBlurSharpen(amount=0)
         for i in self.weapon_wheel_list:
             i.enable()
         for icon in self.wheel_icons_list:
-            icon.fade_in(value=0.8, duration=0.15, delay = 0)
+            icon.fade_in(value=0.5, duration=0.15, delay = 0)
 
     def hide_weaponwheel(self):
         self.wheel.fade_in(value=0, duration=0.15, delay = 0)
+        self.tile_selected.fade_in(value=0, duration=0.15, delay=0)
         self.pause_menu.filters.setBlurSharpen(amount=1)
         for i in self.weapon_wheel_list:
             i.disable()
@@ -169,6 +181,73 @@ class WeaponWheel(Entity):
 
 
 class HUD(Entity):
+
+    def show_money_text(self, cash_bank, cash_hand):
+
+        money_bank = str(cash_bank).split('.')
+        money_hand = str(cash_hand).split('.')
+
+        if len(money_bank) == 1:
+            money_bank = [cash_bank, '00']
+        if len(money_hand) == 1:
+            money_hand = [cash_hand, '00']
+
+        if len(money_hand[1]) == 1:
+            money_hand[1] = '0' + money_hand[1]
+
+        if len(money_bank[1]) == 1:
+            money_bank[1] = '0' + money_bank[1]
+
+        self.cash_inhand.text = '$' + str(money_bank[0])
+        self.cash_inhand_cents.text = money_bank[1]
+
+        self.cash_inbank.text = '$' + str(money_hand[0])
+        self.cash_inbank_cents.text = money_hand[1]
+
+        self.cash_inbank_icon.alpha = 1
+        self.cash_inhand_icon.alpha = 1
+
+        self.cash_inhand_cents_shadow.text = money_hand[1]
+        self.cash_inbank_cents_shadow.text = money_bank[1]
+        self.cash_inhand_shadow.text = '$' + str(money_hand[0])
+        self.cash_inbank_shadow.text = '$' + str(money_bank[0])
+
+    def hide_money_text(self):
+        self.cash_inhand.text = ''
+        self.cash_inhand_cents.text = ''
+
+        self.cash_inbank.text = ''
+        self.cash_inbank_cents.text = ''
+
+        self.cash_inbank_icon.alpha = 0
+        self.cash_inhand_icon.alpha = 0
+
+        self.cash_inhand_cents_shadow.text = ''
+        self.cash_inbank_cents_shadow.text = ''
+        self.cash_inhand_shadow.text = ''
+        self.cash_inbank_shadow.text = ''
+
+
+
+
+
+    # --------------------------------------------------------
+
+    def hide_ammo_text(self):
+        self.ammo_loaded.text = ''
+        self.ammo_loaded_shadow.text = ''
+        self.ammo_remain.text = ''
+        self.ammo_remain_shadow.text = ''
+        self.bullet_icon.alpha = 0
+
+    def show_ammo_text(self, revolver_ammo, full_ammo):
+        self.ammo_loaded.text = revolver_ammo
+        self.ammo_loaded_shadow.text = revolver_ammo
+        self.ammo_remain.text = full_ammo
+        self.ammo_remain_shadow.text = full_ammo
+        self.bullet_icon.alpha = 1
+
+    # --------------------------------------------------------
 
     def delayed_static_show(self):
         self.dead_screen_anim.play_animation('static_show')
@@ -282,6 +361,7 @@ class HUD(Entity):
         self.language_file = language_file
         self.player_stats = player_stats
         self.minimap = Entity(texture = minimap, model = 'quad', position = (-0.68, -0.32, -0.05), scale = (0.4, 0.4, 0), alpha = 0, parent = camera.ui)
+        self.minimap_bg = Entity(texture = minimap_background, model = 'circle', position = (-0.685, -0.326, -0.04), scale = (0.24, 0.24), alpha = 0, parent = camera.ui, texture_scale = (4,4))
 
         self.dead_screen_status = 'none'
 
@@ -293,7 +373,6 @@ class HUD(Entity):
         self.power_core  = Entity(texture = core_spritesheet, model = 'quad', position = (-0.685, -0.161, -0.05), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [2, 0])
         self.hunger_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.6, -0.178, -0.05), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5, 1], tile_coordinate = [3, 0])
         self.thirst_core = Entity(texture = core_spritesheet, model = 'quad', position = (-0.541, -0.2285, -0.05), scale = (0.07, 0.07, 0), alpha = 0, parent = camera.ui, tileset_size = [5,1], tile_coordinate = [4,0])
-
 
         # -> CORE FRAMES <- #
 
@@ -337,14 +416,43 @@ class HUD(Entity):
                 'static_hide': ((29, 1), (29, 1)),
                 'static_show': ((29, 0), (29, 0))})
 
-        self.dead_continue_text = Text(text = '', position=[0.74, -0.44, -0.01], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = [1.3, 1.1, 0])
+        self.dead_continue_text = Text(text = '', position=[0.7, -0.44, -0.01], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = [1.3, 1.1, 0])
         self.dead_continue_click = Entity(alpha=0, scale=(0.15, 0.05, 0), position=[0.79, -0.448, 0], model='quad', collider='box', parent=camera.ui, on_click=Func(HUD.hide_death_screen, self), on_mouse_enter=Func(HUD.dead_continue_hover, self), on_mouse_exit=Func(HUD.dead_continue_leave, self))
         self.dead_continue_click.disable()
+
+        # -------------------------------------------------------------------------------------------------------------
+        # PRINT MONEY AND AMMO
+
+        self.ammo_remain_shadow = Text(text = '', position=[0.782, 0.453, 0], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.ammo_loaded_shadow = Text(text = '', position=[0.778, 0.435, 0], origin=(0.5, 0), color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+
+
+        self.ammo_remain = Text(text = '', position=[0.78, 0.455, -0.01], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.ammo_loaded = Text(text = '', position=[0.775, 0.438, -0.01], origin=(0.5, 0), color = rgb(198,205,205), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.bullet_icon = Entity(texture = screen_icons, model='quad', position = [0.84, 0.439, -0.01], alpha=0, parent=camera.ui, tileset_size=[3, 1], tile_coordinate = [2,0],  scale=(0.05, 0.05))
+
+        # -----[]
+
+        self.cash_inhand_cents_shadow = Text(text = '', position=[0.779, 0.453, 0], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.cash_inbank_cents_shadow = Text(text = '', position=[0.779, 0.403, 0], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.cash_inhand_shadow = Text(text = '', position=[0.773, 0.435, 0], color = color.black, origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.cash_inbank_shadow = Text(text = '', position=[0.773, 0.385, 0], color = color.black, origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+
+
+        self.cash_inhand_cents = Text(text = '', position=[0.775, 0.405, -0.01], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.cash_inbank_cents = Text(text = '', position=[0.775, 0.455, -0.01], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+
+        self.cash_inhand = Text(text = '', position=[0.77, 0.388, -0.01], color = rgb(198,205,205), origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.cash_inbank = Text(text = '', position=[0.77, 0.438, -0.01], color = rgb(198,205,205), origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+
+        self.cash_inbank_icon = Entity(texture = screen_icons, model='quad', position = [0.84, 0.44, -0.01], alpha=0, parent=camera.ui, tileset_size=[3, 1], tile_coordinate = [0,0],  scale=(0.05, 0.05))
+        self.cash_inhand_icon = Entity(texture = screen_icons, model='quad', position = [0.84, 0.39, -0.01], alpha=0, parent=camera.ui, tileset_size=[3, 1], tile_coordinate = [1,0],  scale=(0.05, 0.05))
 
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
     def show_hud(self):
-        self.minimap.fade_in(value=0.9, duration=0.4, delay = 0.1)
+        self.minimap.fade_in(value=1, duration=0.4, delay = 0.1)
+        self.minimap_bg.fade_in(value=0.9, duration=0.4, delay = 0.1)
 
         self.health_core.fade_in(value=1, duration=0.3, delay=0.02)
         self.energy_core.fade_in(value=1, duration=0.3, delay=0.02)
@@ -367,6 +475,7 @@ class HUD(Entity):
 
     def hide_hud(self, speed = 0.12):
         self.minimap.fade_in(value=0, duration=speed, delay = 0.05)
+        self.minimap_bg.fade_in(value=0, duration=speed, delay = 0.05)
 
         self.health_core.fade_in(value=0, duration=speed, delay = 0.05)
         self.energy_core.fade_in(value=0, duration=speed, delay=0.05)
@@ -393,9 +502,8 @@ class HUD(Entity):
 ########################################################################################################################
 # INVENTORY #
 
-
 class Inventory(Entity):
-    def __init__(self, language_pack, **kwargs):
+    def __init__(self, pause_menu, **kwargs):
         super().__init__(
             parent = camera.ui,
             model = 'quad',
@@ -404,37 +512,49 @@ class Inventory(Entity):
             scale = (.43, .43),
             origin = (-.5, .5),
             position = (-0.24,0.275),
-            color = color.color(0,0,.1,.9))
+            color = color.color(0,0,.1,.9),
+            alpha = 0,
+            visible = False)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        self.language_pack = language_pack
-        self.background = Entity(texture = inventory_background, alpha = 1, scale = (0.62, 1.024, -0.12), position=[0, 0, 0], model='quad', parent=camera.ui)
-
+        self.pause_menu = pause_menu
+        self.background = Entity(texture = inventory_background, alpha = 0, scale = (0.62, 1.024, -0.12), position=[0, 0, 0], model='quad', parent=camera.ui)
 
     # [] ------------------------------------------------------------------------------------------------------------- []
 
-    def find_free_spot(self): # Keres egy üres helyet, és visszadja az x, y koordinátáját.
+    def find_free_spot(self, tagged): # Keres egy üres helyet, és visszadja az x, y koordinátáját.
         for y in range(4):
             for x in range(4):
-                grid_positions = [(int(e.x*self.texture_scale[0]), int(e.y*self.texture_scale[1])) for e in self.children]
+
+                new_children_list = []
+                for i in self.children:
+                    if i.tag[1] == tagged:
+                        new_children_list.append(i)
+
+                grid_positions = [(int(e.x*self.texture_scale[0]), int(e.y*self.texture_scale[1])) for e in new_children_list]
+                print(grid_positions)
 
                 if not (x,-y) in grid_positions:
                     return x, y
 
     # [] ------------------------------------------------------------------------------------------------------------- []
 
-    def append(self, item, x=0, y=0): # Hozzáad egy itemet
+    def remove(self, name, category):
+        for item in self.children:
+            print(item)
+
+    def append(self, item, tagged, x = 0, y = 0): # Hozzáad egy itemet
         if len(self.children) >= 4*4: # Lefut, ha tele az inventory
             print('inventory full')
             return
 
-        x, y = self.find_free_spot() # De előtte keresni kel legy szabad helyet.
+        x, y = self.find_free_spot(tagged) # De előtte keresni kell egy szabad helyet.
 
-        icon = Draggable( parent = self, model = 'quad', texture = item, color = color.white,
+        icon = Draggable(parent = self, model = 'quad', texture = item, color = color.white,
             scale_x = 1 / self.texture_scale[0], scale_y = 1 / self.texture_scale[1], origin = (-.5,.5),
-            x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], z = -.5)
+            x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], z = -.5, tag = [item, tagged])
 
         name = item.replace('_', ' ').title()
 
@@ -459,17 +579,37 @@ class Inventory(Entity):
                 if c == icon:
                     continue
 
-                if c.x == icon.x and c.y == icon.y:
-                    c.position = icon.org_pos
+                if c.tag[1] == icon.tag[1]:
+                    if c.x == icon.x and c.y == icon.y:
+                        c.position = icon.org_pos
 
         icon.drag = drag
         icon.drop = drop
 
+    def hide_items_delay(self, item):
+        item.disable()
+
+    def show_items_delay(self, item):
+        item.enable()
+
     def show_inventory(self):
-        pass
+        self.visible = True
+        self.pause_menu.filters.setBlurSharpen(amount=0)
+        self.background.fade_in(value=1, duration=0.3, delay=0.02)
+        for item in self.children:
+            item.fade_in(value=1, duration=0.3, delay=0.02)
+            invoke(Inventory.show_items_delay, self, item, delay = 0.1)
 
     def hide_inventory(self):
-        pass
+        self.visible = False
+        self.pause_menu.filters.setBlurSharpen(amount=1)
+        self.background.fade_in(value=0, duration=0.3, delay=0.02)
+        for item in self.children:
+            item.fade_in(value=0, duration=0.3, delay=0.02)
+            invoke(Inventory.hide_items_delay, self, item, delay = 0.5)
+
+    def add_item(self, _item_, category):
+        self.append(item = _item_, tagged = category)
 
 
 

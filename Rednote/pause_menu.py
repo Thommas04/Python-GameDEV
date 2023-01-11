@@ -73,8 +73,8 @@ class PauseMenu(Entity):
         keyboard.press(Key.esc)
         keyboard.release(Key.esc)
 
-
         self.main_menu.show_menu()
+        self.hud.hide_hud()
         self.main_menu.canvas.fade_in(value = 1, duration = 0.4)
         self.main_menu.canvasbg.fade_in(value = 1, duration = 0.4)
 
@@ -126,8 +126,8 @@ class PauseMenu(Entity):
 
         self.pocket_watch_bg = Entity(texture = pocketwatch_bg, model = 'quad', position = (-0.72, 0.35, -0.1), scale = (0.3, 0.3, 0), alpha = 0, parent = camera.ui)
 
-        self.hours_spritesheet = Entity(texture = clock_hours_spritesheet, model = 'quad', position = (self.pocket_watch_bg.position.x - 0.005, self.pocket_watch_bg.position.y - 0.025, -0.1), scale=(0.11, 0.11, 0), alpha = 0, parent = camera.ui, tileset_size=[48, 1], tile_coordinate = [25, 0])
-        self.minutes_spritesheet = Entity(texture = clock_minutes_spritesheet, model = 'quad', position = (self.pocket_watch_bg.position.x - 0.005, self.pocket_watch_bg.position.y - 0.025, -0.1), scale=(0.16, 0.16, 0), alpha = 0, parent = camera.ui, tileset_size=[60, 1], tile_coordinate = [15, 0])
+        self.hours_spritesheet = Entity(texture = clock_hours_spritesheet, model = 'quad', position = (self.pocket_watch_bg.position.x - 0.005, self.pocket_watch_bg.position.y - 0.025, -0.2), scale=(0.11, 0.11, 0), alpha = 0, parent = camera.ui, tileset_size=[48, 1], tile_coordinate = [25, 0])
+        self.minutes_spritesheet = Entity(texture = clock_minutes_spritesheet, model = 'quad', position = (self.pocket_watch_bg.position.x - 0.005, self.pocket_watch_bg.position.y - 0.025, -0.2), scale=(0.16, 0.16, 0), alpha = 0, parent = camera.ui, tileset_size=[60, 1], tile_coordinate = [15, 0])
 
     # Menü kinyitása
     def show_menu(self):
@@ -187,7 +187,7 @@ class PauseMenu(Entity):
         self.hud.hide_hud()
 
     # Menü bezárása
-    def close_menu(self):
+    def close_menu(self, state):
         global pause_menu_opened, paused
         self.filters.setBlurSharpen(amount=1)
         pause_menu_opened = False
@@ -217,4 +217,5 @@ class PauseMenu(Entity):
         self.settings_click.animate_position([-2, -0.32, -0.02], curve=curve.linear, duration=0.2, delay=0.01)
         self.quit_click.animate_position([-2, -0.4, -0.02], curve=curve.linear, duration=0.2, delay=0.01)
 
-        self.hud.show_hud()
+        if state == 'ingame':
+            self.hud.show_hud()
