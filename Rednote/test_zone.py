@@ -55,7 +55,7 @@ def light():
 
 #light()
 
-L2 = AmbientLight(y = -5, z = -100, color = color.blue, scale = 1000)
+#L2 = AmbientLight(y = -5, z = -100, color = color.blue, scale = 1000)
 #L3 = PointLight(y = -5, z = 10, color = color.blue, scale = 100)
 
 # [ Functions ]--------------------------------------------------------------------------------------------------------[]

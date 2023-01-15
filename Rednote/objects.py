@@ -10,7 +10,7 @@ def place_all_objects():
     print('befogom a pofámat')
 
     bank = Entity(model = 'quad',
-                  position = (35, 15, -0.1),
+                  position = (50, -15, -0.1),
                   scale = (25, 16.5, 0),
                   texture = 'textures/buildings/rustfort_bank',
                   rotation = (0, 0, 0),

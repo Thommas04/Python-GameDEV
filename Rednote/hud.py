@@ -19,6 +19,8 @@ screen_icons = 'hud/hud_widgets/screen_icons/screen_icons.png'
 spencer_carbine_icon = 'hud/weapon_wheel_items/rifle_icon.png'
 hand_icon = 'hud/weapon_wheel_items/hand_icon.png'
 colt_icon = 'hud/weapon_wheel_items/revolver_icon.png'
+axe_icon = 'hud/weapon_wheel_items/axe_icon.png'
+lantern_icon = 'hud/weapon_wheel_items/lantern_icon.png'
 
 # DEAD SCREEN # ------------------------------------------------------------*
 
@@ -39,6 +41,11 @@ core_bg_spritesheet = 'hud/hud_widgets/cores/core_bg_sheet.png'
 inventory_background = 'hud/inventory/widgets/inventory_bg.png'
 inventory_buttons_spritesheet = 'hud/inventory/widgets/inventory_buttons_sheet.png'
 inventory_selected_tile = 'hud/inventory/widgets/inventory_selected_tile.png'
+
+# INVENTORY # ------------------------------------------------------------*
+# Builder MODE HUD
+
+grid = 'hud/builder_mode_hud/grid.png'
 
 
 # [ Vertices and Triangles ] ------------------------------------------------------------------------------------------[]
@@ -142,17 +149,17 @@ class WeaponWheel(Entity):
 
 
         self.up_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0, 0.245, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
-        self.upper_left_icon = Entity(tag = 'colt', rotation = (0,0,-40), texture = colt_icon, model = 'quad', position = (-0.162, 0.175, -0.1), scale = (0.165, 0.165, 0), alpha = 0, parent=camera.ui)
+        self.upper_left_icon = Entity(tag = 'colt', rotation = (0,0,-40), texture = colt_icon, model = 'quad', position = (-0.168, 0.175, -0.1), scale = (0.165, 0.165, 0), alpha = 0, parent=camera.ui)
         self.upper_right_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.2, 0.15, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
 
         self.right_icon = Entity(tag = 'hand', texture = hand_icon, model = 'quad', position = (0.275, -0.022, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
-        self.left_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (-0.26, -0.03, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+        self.left_icon = Entity(tag = '', texture = axe_icon, model = 'quad', position = (-0.26, -0.03, -0.1), scale = (0.12, 0.12, 0), rotation = (0,0,-69), alpha = 0, parent=camera.ui)
         self.lower_left_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (-0.17, -0.22, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
         self.lower_right_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.2, -0.21, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
         self.down_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.02, -0.295, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
 
 
-        self.wheel_icons_list = [self.right_icon, self.upper_left_icon]#, self.up_iconself.upper_right_icon, self.left_icon, self.lower_left_icon, self.lower_right_icon, self.down_icon]
+        self.wheel_icons_list = [self.right_icon, self.upper_left_icon, self.left_icon]#, self.up_iconself.upper_right_icon, self.lower_left_icon, self.lower_right_icon, self.down_icon]
 
     def get_back_selected_wheeltile(self):
         return self.selected_tile
@@ -471,7 +478,7 @@ class HUD(Entity):
         self.power_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
         self.hunger_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
         self.thirst_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
-
+        print('mukukogy')
 
     def hide_hud(self, speed = 0.12):
         self.minimap.fade_in(value=0, duration=speed, delay = 0.05)
@@ -611,12 +618,26 @@ class Inventory(Entity):
     def add_item(self, _item_, category):
         self.append(item = _item_, tagged = category)
 
+########################################################################################################################
+# BUILDER MODE #
 
+class BuilderModeHud():
+    def __init__(self):
+        self.grid = Entity(texture = grid, model = 'quad', position = (0,0,-0.3), scale = (15, 15, 0), alpha = 1)
 
+    # ------------------------------------------------------------------------------------------------------------------
 
+    def open_builder_mode(self):
+        pass
 
+    def close_builder_mode(self):
+        pass
 
+    # ------------------------------------------------------------------------------------------------------------------
+    # DRAW GRIDS
 
+    def update_grid(self, x, y):
+        self.grid.position = (x + 0.5, y + 0.5)
 
 
 

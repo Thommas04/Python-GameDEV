@@ -91,12 +91,13 @@ class PauseMenu(Entity):
 
     # -----------------------
 
-    def __init__(self, language_file, main_menu, hud):
+    def __init__(self, language_file, main_menu, hud, player):
         global filters
         self.main_menu = main_menu
         self.hud = hud
         self.language_file = language_file
         self.pause_menu_bg = Entity(texture=pausemenu_bg, alpha=0, scale=(0.68, 1.08, -0.12), position=[-2, -0.040, 0], model='quad', parent=camera.ui)
+        self.player = player
 
         self.hours_efix = 0
 
@@ -217,5 +218,5 @@ class PauseMenu(Entity):
         self.settings_click.animate_position([-2, -0.32, -0.02], curve=curve.linear, duration=0.2, delay=0.01)
         self.quit_click.animate_position([-2, -0.4, -0.02], curve=curve.linear, duration=0.2, delay=0.01)
 
-        if state == 'ingame':
+        if state == 'ingame' and self.player.builder_mode == False:
             self.hud.show_hud()

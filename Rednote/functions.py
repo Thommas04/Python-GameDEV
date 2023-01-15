@@ -1,5 +1,6 @@
 
 from ursina import *
+from pandas import *
 
 def create_net():
     x = 0 ; y = 0
@@ -18,8 +19,8 @@ def create_net():
 def input(key):
     if key == 'left mouse down':
         try:
-            print("(", round(mouse.world_point.x,2),", ", round(mouse.world_point.y,2) ,", ", 0 , "),", sep = "")
-            Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -0.001 ), scale = 10, text = str(round(mouse.world_point.x,2)) + " / " + str(round(mouse.world_point.y,2)))
+            print("(", floor(mouse.world_point.x),", ", floor(mouse.world_point.y),"),", sep = "")
+            Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -0.001 ), scale = 10, text = str(floor(mouse.world_point.x)) + " / " + str(floor(mouse.world_point.y)))
             Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.005, world_position = (mouse.world_point.x, mouse.world_point.y, 0 )  )
         except: pass
 
@@ -65,3 +66,28 @@ def fileread ( filename : str ) -> list :
             return [ row.replace ( "\n" , "" ) for row in file.readlines ( ) ]
     except FileNotFoundError :
         return [ ]
+
+# [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+# Working with EXCEL Table
+
+def new_excel(size_x, size_y):
+    matrix_dict = {}
+    matrix_list = []
+    matrix_counter = 0
+
+    for i in range(size_y):
+        matrix_list.append('0')
+
+    for i in range(size_x):
+        matrix_dict['Reserved' + ' ' + str(matrix_counter)] = matrix_list
+        matrix_dict['Type' + ' ' + str(matrix_counter)] = matrix_list
+        matrix_dict['Args' + ' ' + str(matrix_counter)] = matrix_list
+
+        matrix_counter += 1
+
+    data_frame = DataFrame(matrix_dict)
+    return data_frame
+
+
+def save_excel(file, path, sheet):
+    file.to_excel(path, sheet_name = sheet, index = False)
