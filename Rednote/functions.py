@@ -85,7 +85,6 @@ def new_excel(size_x, size_y):
         matrix_dict['hp_'+ str(matrix_counter)] = matrix_list
         matrix_dict['arg1_' + str(matrix_counter)] = matrix_list
         matrix_dict['arg2_' + str(matrix_counter)] = matrix_list
-        matrix_dict['arg3_' + str(matrix_counter)] = matrix_list
 
         matrix_counter += 1
 
@@ -98,19 +97,28 @@ def save_excel(data_frame, path, sheet):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def load_from_excel(matrix, excel_path):
-    pass
+# Az excel fájlból beolvassa a mátrixba
+def load_from_excel(data_frame, matrix, excel_path):
+    print('indulamandula')
+    for y in range(matrix.size_y):
+        for x in range(matrix.size_x):
 
+            matrix.matrix[y][x]['reserved'] = data_frame['reserved_' + str(x)][y]
+            matrix.matrix[y][x]['type'] = data_frame['type_' + str(x)][y]
+            matrix.matrix[y][x]['hp'] = data_frame['hp_' + str(x)][y]
+            matrix.matrix[y][x]['arg1'] = data_frame['arg1_' + str(x)][y]
+            matrix.matrix[y][x]['arg2'] = data_frame['arg2_' + str(x)][y]
 
-def load_to_excel(data_frame, matrix, excel_path):
+# A mátrixból beolvassa az excel fájlba
+def load_to_excel(data_frame, matrix, excel_path, sheet):
     print('indulacucc')
     for y in range(matrix.size_y):
         for x in range(matrix.size_x):
-            print(matrix.matrix[y][x]['type'])
 
             data_frame['reserved_' + str(x)][y] = matrix.matrix[y][x]['reserved']
             data_frame['type_' + str(x)][y] = matrix.matrix[y][x]['type']
             data_frame['hp_' + str(x)][y] = matrix.matrix[y][x]['hp']
             data_frame['arg1_' + str(x)][y] = matrix.matrix[y][x]['arg1']
             data_frame['arg2_' + str(x)][y] = matrix.matrix[y][x]['arg2']
-            data_frame['arg3_' + str(x)][y] = matrix.matrix[y][x]['arg3']
+
+    data_frame.to_excel(excel_path, sheet_name = sheet, index = False)
