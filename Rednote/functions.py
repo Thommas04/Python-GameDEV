@@ -1,6 +1,7 @@
 
 from ursina import *
-from pandas import *
+from pandas import DataFrame, read_excel, ExcelWriter
+from openpyxl import load_workbook
 
 def create_net():
     x = 0 ; y = 0
@@ -79,15 +80,37 @@ def new_excel(size_x, size_y):
         matrix_list.append('0')
 
     for i in range(size_x):
-        matrix_dict['Reserved' + ' ' + str(matrix_counter)] = matrix_list
-        matrix_dict['Type' + ' ' + str(matrix_counter)] = matrix_list
-        matrix_dict['Args' + ' ' + str(matrix_counter)] = matrix_list
+        matrix_dict['reserved_'+ str(matrix_counter)] = matrix_list
+        matrix_dict['type_'+ str(matrix_counter)] = matrix_list
+        matrix_dict['hp_'+ str(matrix_counter)] = matrix_list
+        matrix_dict['arg1_' + str(matrix_counter)] = matrix_list
+        matrix_dict['arg2_' + str(matrix_counter)] = matrix_list
+        matrix_dict['arg3_' + str(matrix_counter)] = matrix_list
 
         matrix_counter += 1
 
     data_frame = DataFrame(matrix_dict)
+
     return data_frame
 
+def save_excel(data_frame, path, sheet):
+    data_frame.to_excel(path, sheet_name = sheet, index = False)
 
-def save_excel(file, path, sheet):
-    file.to_excel(path, sheet_name = sheet, index = False)
+# ----------------------------------------------------------------------------------------------------------------------
+
+def load_from_excel(matrix, excel_path):
+    pass
+
+
+def load_to_excel(data_frame, matrix, excel_path):
+    print('indulacucc')
+    for y in range(matrix.size_y):
+        for x in range(matrix.size_x):
+            print(matrix.matrix[y][x]['type'])
+
+            data_frame['reserved_' + str(x)][y] = matrix.matrix[y][x]['reserved']
+            data_frame['type_' + str(x)][y] = matrix.matrix[y][x]['type']
+            data_frame['hp_' + str(x)][y] = matrix.matrix[y][x]['hp']
+            data_frame['arg1_' + str(x)][y] = matrix.matrix[y][x]['arg1']
+            data_frame['arg2_' + str(x)][y] = matrix.matrix[y][x]['arg2']
+            data_frame['arg3_' + str(x)][y] = matrix.matrix[y][x]['arg3']
