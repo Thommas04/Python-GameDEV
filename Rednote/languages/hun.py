@@ -5,6 +5,7 @@ def set_language():
     main_menu = {'Play' : 'Játék',
                  'Settings' : 'Beállítások',
                  'Quit' : 'Kilépés',
+                 'Save' : 'Mentés',
 
                  'LoadInfo' : '- Töltsd be a már létrehozott játékodat!',
                  'NewGameInfo' : '- Hozz létre egy új játékot!',

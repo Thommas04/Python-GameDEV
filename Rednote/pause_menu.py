@@ -52,6 +52,7 @@ class PauseMenu(Entity):
     # ///////////////////////////////////////////////////
 
     def resume(self):
+        self.player.pause_menu_state = None
         keyboard.press(Key.esc)
         keyboard.release(Key.esc)
 
@@ -59,7 +60,13 @@ class PauseMenu(Entity):
         pass
 
     def open_story(self):
-        pass
+        self.player.pause_menu_state = 'story'
+
+        keyboard.press(Key.esc)
+        keyboard.release(Key.esc)
+
+        self.main_menu.show_story_menu()
+
 
     def open_help(self):
         pass
@@ -218,5 +225,5 @@ class PauseMenu(Entity):
         self.settings_click.animate_position([-2, -0.32, -0.02], curve=curve.linear, duration=0.2, delay=0.01)
         self.quit_click.animate_position([-2, -0.4, -0.02], curve=curve.linear, duration=0.2, delay=0.01)
 
-        if state == 'ingame' and self.player.builder_mode == False:
+        if state == 'ingame' and self.player.builder_mode == False and self.player.pause_menu_state == None:
             self.hud.show_hud()

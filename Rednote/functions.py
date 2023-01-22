@@ -58,7 +58,7 @@ def filewrite ( line : int , new_content : str , filename : str ) :
                 file.write ( "\n" )
             file.write ( new_content )
 
-# [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+# [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 # File READING # Returns the file lines in a list
 
 def fileread ( filename : str ) -> list :
@@ -68,16 +68,16 @@ def fileread ( filename : str ) -> list :
     except FileNotFoundError :
         return [ ]
 
-# [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+# [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 # Working with EXCEL Table
 
-def new_excel(size_x, size_y):
+def new_tile_excel(size_x, size_y):
     matrix_dict = {}
     matrix_list = []
     matrix_counter = 0
 
     for i in range(size_y):
-        matrix_list.append('0')
+        matrix_list.append(None)
 
     for i in range(size_x):
         matrix_dict['reserved_'+ str(matrix_counter)] = matrix_list
@@ -92,7 +92,53 @@ def new_excel(size_x, size_y):
 
     return data_frame
 
-def save_excel(data_frame, path, sheet):
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+def new_info_excel():
+    info_data = {"TITLE": ['creation_date',
+                           'creation_time',
+                           'all_played_hours',
+                           'last_played_hours',
+                           'last_played_mins',
+                           'username',
+                           'season',
+                           'day',
+                           'bank_balance',
+                           'wallet',
+                           'cheats',
+                           'mission',
+                           'health',
+                           'health_core',
+                           'energy',
+                           'energy_core',
+                           'power',
+                           'power_core',
+                           'hunger',
+                           'hunger_core',
+                           'thirst',
+                           'thirst_core',
+                           ],
+
+                 "VALUE": [None for i in range(22)] }
+
+    info = DataFrame(info_data)
+    return info
+
+
+# -----------------------------------------------------------------------------------[]
+
+def save_info_to_excel(matrix, data_frame):
+    for i in range(11): # teljes - 2
+        data_frame['VALUE'][i] = matrix.info_dict[str(data_frame['TITLE'][i])]
+
+def load_info_from_excel(matrix, data_frame):
+    for i in range(11): # teljes - 2
+        matrix.info_dict[str(data_frame['TITLE'][i])] = data_frame['VALUE'][i]
+
+
+# ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+def rawsave_excel(data_frame, path, sheet):
     data_frame.to_excel(path, sheet_name = sheet, index = False)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -122,3 +168,29 @@ def load_to_excel(data_frame, matrix, excel_path, sheet):
             data_frame['arg2_' + str(x)][y] = matrix.matrix[y][x]['arg2']
 
     data_frame.to_excel(excel_path, sheet_name = sheet, index = False)
+
+def fast_load_to_excel(data_frame, matrix, excel_path, sheet):
+    for tile in matrix.updated_tiles:
+        data_frame['reserved_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['reserved']
+        data_frame['type_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['type']
+        data_frame['hp_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['hp']
+        data_frame['arg1_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['arg1']
+        data_frame['arg2_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['arg2']
+    data_frame.to_excel(excel_path, sheet_name = sheet, index = False)
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+def place_objects_from_matrix(matrix):
+    print('indul a betöltés a mátrixból [y, x]')
+    for y in range(matrix.size_y):
+        for x in range(matrix.size_x):
+
+            if matrix.matrix[y][x]['type'] == 'tower': # pontosítsd és rakd bele listába a létrehozott elemeket. Egy fő classon belül legyen a mainbe.
+                print(f'{x},{y} pozícióra tornyot rakok')
+            if matrix.matrix[y][x]['type'] == 'enemy':
+                print(f'{x},{y} pozícióra enemyt rakok')
+            if matrix.matrix[y][x]['type'] == 'machine':
+                print(f'{x},{y} pozícióra gépet rakok')
+
+
