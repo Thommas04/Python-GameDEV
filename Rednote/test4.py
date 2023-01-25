@@ -1,18 +1,27 @@
-import math
 from ursina import *
+from direct.stdpy import thread
 
-# Set up the window
+
 app = Ursina()
+window.color = color.white
 
-center = Entity(model='quad', scale=.1, color=color.red)
-p = Entity()
-for i in range(4*5):
-    b = Button(parent=p, model='quad', scale=Vec2(.2,.1), text=str(i), color=color.tint(color.random_color(),-.6))
-    b.text_entity.scale=1
-t = time.time()
-grid_layout(p.children, max_x=7, max_y=10, origin=(0, .5), spacing=(.15, 0))
-center = Entity(parent=camera.ui, model=Circle(), scale=.005, color=color.lime)
-EditorCamera()
-print(time.time() - t)
+Button.color = color._20
+
+
+te = TextField(max_lines=1, scale=1, register_mouse_input = True, text='1234')
+
+
+
+entity = Entity(model = 'cube', scale = 1, color = color.red, position = (0,0,0))
+
+def func():
+    entity.animate_position((0,5,0), duration = 10, curve = curve.linear)
+
+
+def update():
+    print('tekocog')
+
+thread.start_new_thread(function=func, args='')
+
 
 app.run()

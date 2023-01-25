@@ -19,6 +19,8 @@ def set_language():
                  'QuitGame': 'Quit game',
                  'SaveGame': 'Save game',
                  'LOADTITLE': 'LOAD GAME',
+                 'NEWGAMETITLE' : 'NEW GAME',
+                 'NAME' : 'Your name',
 
                  'Player': 'Player :',
                  'Season': 'Season :',

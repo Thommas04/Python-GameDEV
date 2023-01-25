@@ -7,6 +7,9 @@ from ursina import *
 from functions import fileread, load_info_from_excel
 from pandas import DataFrame, read_excel
 
+#load screen
+cylinder_spritesheet = 'menu/main_menu/load_screen/cylinder_sheet.png'
+
 # menu backgrounds
 morning_bg1 = 'menu/main_menu/background/menu_morning_1.png'
 morning_bg2 = 'menu/main_menu/background/menu_morning_2.png'
@@ -143,12 +146,15 @@ def load_game_pressed(self):
 
 def new_game_pressed(self): # NEW GAME PRESSED
     global status
-    Menu.hide_play_menu(self)
+
+    Menu.show_new_game_menu(self)
+
+    '''Menu.hide_play_menu(self)
     self.canvas.fade_out(value = 0, duration = 1)
     self.canvasbg.fade_out(value = 0, duration = 1)
     self.background.fade_out(value = 0, duration = 1)
     status = 'ingame'
-    self.hud.show_hud()
+    self.hud.show_hud()'''
 
 def exit_game_pressed(a):
     global enable_bit
@@ -166,7 +172,7 @@ def exit_game_pressed(a):
 #ESC lenyomva - Vissza
 def back_pressed(self):
     global enable_bit
-    if enable_bit == True:
+    if enable_bit == True and self.location != 'loading_screen':
         if self.player.state == 'inmenu':
             if self.location == 'play':
                 Menu.hide_play_menu(self)
@@ -180,6 +186,11 @@ def back_pressed(self):
                 Menu.show_play_menu(self)
                 self.menu_title.shake(duration=.25, magnitude=5, speed=.05, direction=(1, 0.5))
                 self.menu_title.appear(speed=.025, delay=0.15)
+            if self.location == 'newgame':
+                Menu.show_play_menu(self)
+                self.menu_title.shake(duration=.25, magnitude=5, speed=.05, direction=(1, 0.5))
+                self.menu_title.appear(speed=.025, delay=0.15)
+                Menu.hide_new_game_menu(self)
 
         if self.player.state == 'ingame':
             if self.player.pause_menu_state == 'story':
@@ -232,6 +243,19 @@ def save_game_hovered(self):
 def save_game_exit(self):
     self.save_game_hightlighted.fade_out(value=0, duration=0)
     self.save_game_text.color = rgb(101,101,101)
+
+########################################################################################################################
+# NEW GAME CLICK FUNCTIONS
+
+
+def cheats_click(self, right):
+    pass
+
+
+def cheats_hover(self, right):
+    pass
+def cheats_leave(self, right):
+    pass
 
 # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -327,15 +351,34 @@ class Menu(Entity):
         pos_list = [[0.35,0.32],[0.35,0.28],[0.35,0.24],[0.35,0.2],[0.35,0.16],[0.35,0.12],[0.35,0.08],[0.35,0.04],[0.35,0],[0.35,-0.04],[0.35,-0.08],[0.35,-0.12],[0.35,-0.16],[0.35,-0.20],[0.35,-0.24],[0.35,-0.28],[0.35,-0.32]]
 
         for pos in pos_list:
-            loadline = Loads(pos[0], pos[1], language_file, self.matrix)
+            loadline = Loads(pos[0], pos[1], language_file, self.matrix, self)
             loads_list.append(loadline)
 
         show_outside_init() # kint van a class és a hozzá tartozó függvények felett.
 
         ################################################################################################################
+        # NEW GAME Menu
+
+        self.username_txt = Text(text = "Your name", position=[-0.7, 0.22, 0], color=rgb(190, 50, 60), parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.8)
+        self.cheats_txt = Text(text = "Allow cheats", position=[-0.7, 0.15, 0], color=rgb(190, 101, 101), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+
+        self.cheats_left_txt = Text(text = "-", position=[-0.4, 0.15, 0], color=rgb(190, 101, 101), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+        self.cheats_right_txt = Text(text = "-", position=[-0.3, 0.15, 0], color=rgb(190, 101, 101), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+
+        self.cheats_right_clickable = Entity(alpha=1, scale=(0.5, 0.1, 0), position = self.cheats_right_txt, model='quad', collider='box', parent=camera.ui, on_click = Func(cheats_click, self, True), on_mouse_enter=Func(cheats_hover, self, True), on_mouse_exit=Func(cheats_leave, self, True))
+        self.cheats_left_clickable = Entity(alpha=1, scale=(0.5, 0.1, 0), position = self.cheats_right_txt, model='quad', collider='box', parent=camera.ui, on_click = Func(cheats_click, self, False), on_mouse_enter=Func(cheats_hover, self, False), on_mouse_exit=Func(cheats_leave, self, False))
+
+
+
+        ################################################################################################################
         # QUIT Menu
 
+        ################################################################################################################
+        # LOAD SCREEN
 
+        self.load_screen_cylinder = SpriteSheetAnimation(cylinder_spritesheet, alpha = 0, parent=camera.ui, tileset_size=(44, 1), position=(0.82, -0.45, -0.1), scale=(0.07, 0.07), fps=30, animations={
+                'run_cylinder': ((0, 0), (43, 0)),
+                'stop_cylinder': ((0, 0), (0, 0))})
 
 
     # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
@@ -398,9 +441,9 @@ class Menu(Entity):
             self.load_game_button.enable()
             self.exit_game_button.enable()
 
-            self.new_game_button.animate_position([0.42, 0.15, 0], curve=curve.in_sine, duration=0.4, delay=0.4)
-            self.load_game_button.animate_position([-0.2, 0, 0], curve=curve.in_sine, duration=0.4, delay=0.4)
-            self.exit_game_button.animate_position([0.50, -0.15, 0], curve=curve.in_sine, duration=0.4, delay=0.4)
+            self.new_game_button.animate_position([0.42, 0.15, 0], curve=curve.in_quart, duration=0.4, delay=0.4)
+            self.load_game_button.animate_position([-0.2, 0, 0], curve=curve.in_quart, duration=0.4, delay=0.4)
+            self.exit_game_button.animate_position([0.50, -0.15, 0], curve=curve.in_quart, duration=0.4, delay=0.4)
 
             self.menu_title.text = self.language_file[0].get('GAMETITLE')
             self.menu_title.animate_position([-0.75, 0.46, 0], curve = curve.linear, duration = 0.12, delay = 0.5)
@@ -426,7 +469,7 @@ class Menu(Entity):
         self.back_fromplay.text = self.language_file[0].get('Back')
 
     def hide_play_menu(self):
-        if self.location == 'play':
+        if self.location == 'play' :
             self.splitter_up.fade_out(value=0, duration=0.7, delay=0.1)
             self.splitter_down.fade_out(value=0, duration=0.7, delay=0.1)
             self.menu_title.animate_position([-2, 0.46, 0], curve=curve.in_quart, duration=0.12, delay=0.5)
@@ -459,6 +502,7 @@ class Menu(Entity):
 
     def delayed_show_load_menu(self):
         loadbar_counter = 0
+        self.loadbar_selected_bit = True
         for loadbar in loads_list:
             if loadbar.file != None:
                 loadbar.loadbar_text.text = self.savetitle[loadbar_counter].split('.')[0] # - a mentések itt kapnak címet
@@ -477,10 +521,11 @@ class Menu(Entity):
         self.savetitle = []
         loadfile_counter = 0
 
+        self.loadbar_selected_bit = False
+
         for file_ in os.listdir('./saves'):
             if os.path.isdir(f'./saves/{file_}'):
                 matrix_info_frame = read_excel(f"saves/{file_}/info_data.xlsx", sheet_name = 'infoset')
-                print(matrix_info_frame['TITLE'][5])
 
                 loads_list[loadfile_counter].file = [matrix_info_frame]
                 self.savetitle.append(file_)
@@ -508,15 +553,34 @@ class Menu(Entity):
 
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    def show_new_game_menu(self):
+        self.location = 'newgame'
+        self.menu_title.text = self.language_file[0].get('NEWGAMETITLE')
+        self.menu_title.shake(duration=.25, magnitude=5, speed=.05, direction=(1, 0.5))
+        self.menu_title.appear(speed=.025, delay=0.15)
+
+        Menu.hide_play_menu(self)
+
+        # --------------------------------------------------------------------------------------------------------------
+
+        self.username_txt.text = self.language_file[0].get('NAME')
+
+    def hide_new_game_menu(self):
+        self.username_txt.text = ''
+
+    # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    # INGAME
+
     def show_story_menu(self):
         self.canvas.fade_in(value=1, duration=1)
         self.canvasbg.fade_in(value=1, duration=1)
         self.splitter_up.fade_in(value=1, duration=1)
         self.splitter_down.fade_in(value=1, duration=1)
 
-        self.new_game_button.animate_position([0.42, 0.15, 0], curve=curve.in_sine, duration=0.4, delay=0.4)
-        self.load_game_button.animate_position([-0.2, 0, 0], curve=curve.in_sine, duration=0.4, delay=0.4)
-        self.save_game_button.animate_position([0.42, -0.15, 0], curve=curve.in_sine, duration=0.4, delay=0.4)
+        self.new_game_button.animate_position([0.42, 0.15, 0], curve=curve.in_quart, duration=0.4, delay=0.4)
+        self.load_game_button.animate_position([-0.2, 0, 0], curve=curve.in_quart, duration=0.4, delay=0.4)
+        self.save_game_button.animate_position([0.42, -0.15, 0], curve=curve.in_quart, duration=0.4, delay=0.4)
 
         self.new_game_button.fade_in(value=1, duration=0.5, delay=0.35)
         self.load_game_button.fade_in(value=1, duration=0.6, delay=0.40)
@@ -611,28 +675,43 @@ class Menu(Entity):
     def back(self):
         back_pressed(self)
 
-def loadbar_click(self): # start game
-    pass
+def loadbar_double_click(self, menu): # start game
+    Menu.hide_play_menu(menu)
+    Menu.hide_load_menu(menu)
 
+    menu.menu_title.animate_position([-2, 0.46, 0], curve=curve.in_quart, duration=0.12, delay=0.5)
+    menu.splitter_up.fade_in(value=0, duration=0.7, delay=0.1)
+    menu.splitter_down.fade_in(value=0, duration=0.7, delay=0.1)
+    menu.click_area_back_fromplay.disable()
+    menu.back_fromplay.text = ''
+    menu.location = 'loading_screen'
 
-def loadbar_hovered(self):
+    menu.load_screen_cylinder.alpha = 1
+    menu.load_screen_cylinder.play_animation('run_cylinder')
+
+def loadbar_hovered(self, menu):
     global menu_loadbar_pressed, title_txt, date_txt, usrname_label, ingame_date_label, wealth_label, creation_date_label, playtime_label, \
         cheats_label, mission_description_label, username_txt, ingame_date_txt, wealth_txt, creation_date_txt, playtime_txt, cheats_txt, description_text
 
     self.loadbar.texture = loadbar_active
-    self.loadbar_selected.alpha = 1
+    if menu.loadbar_selected_bit == True:
+        self.loadbar_selected.alpha = 1
+
 
     if self.file != None:
-        matrix_info_frame = read_excel(f"saves/{self.loadbar_text.text}/info_data.xlsx", sheet_name='infoset')
-        load_info_from_excel(self.matrix, matrix_info_frame)
-
+        try:
+            matrix_info_frame = read_excel(f"saves/{self.loadbar_text.text}/info_data.xlsx", sheet_name='infoset')
+            load_info_from_excel(self.matrix, matrix_info_frame)
+        except: print('<<<<<< BETÖLTÉSI HIBA >>>>>>')
 
         for i in loads_list:
             if i.file != None:
                 i.loadbar_text.color = rgb(125, 125, 125)
             i.loadbar_selected.alpha = 0
-        self.loadbar_selected.alpha = 1
+
         self.loadbar_text.color = rgb(236, 102, 108)
+        if menu.loadbar_selected_bit == True:
+            self.loadbar_selected.alpha = 1
 
         if menu_loadbar_pressed == False:
             menu_loadbar_pressed = True
@@ -671,7 +750,8 @@ def loadbar_leave(self):
     self.loadbar_selected.alpha = 0
 
 class Loads():
-    def __init__(self, x, y, language_file, matrix):
+    def __init__(self, x, y, language_file, matrix, MENU):
+        self.MENU = MENU
         self.language_file = language_file
         self.matrix = matrix
         self.file = None
@@ -679,7 +759,7 @@ class Loads():
         self.y = y
 
         self.loadbar = Entity(texture = loadbar_deactive, alpha=0, model='quad', scale=(1.02, 0.05, 0), position=[x, y, 0], parent=camera.ui)
-        self.load_clickable = Entity(alpha=0, scale=(1.02, 0.038, 0), position=[x, y, 0], model='quad', collider='box', parent=camera.ui, on_click=Func(loadbar_click, self), on_mouse_enter=Func(loadbar_hovered, self), on_mouse_exit=Func(loadbar_leave, self))
+        self.load_clickable = Entity(alpha=0, scale=(1.02, 0.038, 0), position=[x, y, 0], model='quad', collider='box', parent=camera.ui, on_double_click = Func(loadbar_double_click, self, self.MENU), on_mouse_enter=Func(loadbar_hovered, self, self.MENU), on_mouse_exit=Func(loadbar_leave, self))
         self.load_clickable.disable()
 
         self.loadbar_text = Text(text = "", position=[x - 0.49, y + 0.009,  -0.01], color = rgb(125, 125, 125), parent=camera.ui, font='fonts/TwCenMT.otf', scale = [1, 0.8, 0])

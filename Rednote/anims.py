@@ -1,108 +1,36 @@
-
 from ursina import *
+from direct.stdpy import thread
 
-block = False
-
-def set_block():
-    global block
-    if block == False:
-        block = True
-def reset_block():
-    global block
-    if block == True:
-        block = False
-        invoke(set_block, delay=reset_delay)
-
-# ---------------------------------------------------------------------------------------------------------------------[]
-
-front_delay = -1
-front_duration = 2
-reset_delay = 0.35
-
-# ezeket egyelore nem futtatja le semmi
-def front_anims_forward(front_right_arm, front_left_arm, front_right_leg, front_left_leg):
-    global block
-    if block == False:
-        pass
-        invoke(set_block, delay = reset_delay)
-
-def front_anims_backward(front_right_arm, front_left_arm, front_right_leg, front_left_leg):
-    global block
-    if block == True:
-        front_right_arm.animate('rotation_x',55, duration = front_duration, delay = front_delay, curve = curve.linear, interrupt='kill')
-        invoke(reset_block, delay = reset_delay)
-
-# ---------------------------------------------------------------------------------------------------------------------[]
-
-player_facing = "front" # cseréjed le animatorra
-
-front_anim_counter = 0
-back_anim_counter = 0
-right_anim_counter = 0
-left_anim_counter = 0
-def front_anim(refresh, upper_body, lower_body):
-    global front_anim_counter, back_anim_counter, right_anim_counter, left_anim_counter, block, player_facing
-
-    if refresh == True:
-        if held_keys['s']:
-            front_anim_counter += 1
-            player_facing = "front"
-            upper_body.texture = 'textures\\main_character\\front_view\\upper_body\\front_anim_up' + str(front_anim_counter)
-            lower_body.texture = 'textures\\main_character\\front_view\\lower_body\\front_anim' + str(front_anim_counter)
-            if front_anim_counter == 8:
-                front_anim_counter = 0
-        if held_keys['s'] == False and player_facing == "front":
-            upper_body.texture = 'textures\\main_character\\front_view\\upper_body\\front_anim_up' + str(front_anim_counter + 1)
-            lower_body.texture = 'textures\\main_character\\front_view\\lower_body\\front_anim' + str(front_anim_counter + 1)
-            if front_anim_counter >= 1:
-                front_anim_counter -= 1
-
-        if held_keys['w']:
-            back_anim_counter += 1
-            player_facing = "back"
-            upper_body.texture = 'textures\\main_character\\back_view\\upper_body\\back_anim' + str(back_anim_counter)
-            lower_body.texture = 'textures\\main_character\\back_view\\lower_body\\back_anim_up' + str(back_anim_counter)
-            if back_anim_counter == 8:
-                back_anim_counter = 0
-        if held_keys['w'] == False and player_facing == "back":
-            upper_body.texture = 'textures\\main_character\\back_view\\upper_body\\back_anim' + str(back_anim_counter + 1)
-            lower_body.texture = 'textures\\main_character\\back_view\\lower_body\\back_anim_up' + str(back_anim_counter + 1)
-            if back_anim_counter >= 1:
-                back_anim_counter -= 1
-
-        if held_keys['d']:
-            right_anim_counter += 1
-            player_facing = "right"
-            upper_body.texture = 'textures\\main_character\\right_view\\upper_body\\right_anim_up' + str(right_anim_counter)
-            lower_body.texture = 'textures\\main_character\\right_view\\lower_body\\right_anim' + str(right_anim_counter)
-            if right_anim_counter == 8:
-                right_anim_counter = 0
-        if held_keys['d'] == False and player_facing == "right":
-            upper_body.texture = 'textures\\main_character\\right_view\\upper_body\\right_anim_up' + str(right_anim_counter + 1)
-            lower_body.texture = 'textures\\main_character\\right_view\\lower_body\\right_anim' + str(right_anim_counter + 1)
-            if right_anim_counter >= 1:
-                right_anim_counter -= 1
-
-        if held_keys['a']:
-            left_anim_counter += 1
-            player_facing = "left"
-            upper_body.texture = 'textures\\main_character\\left_view\\upper_body\\left_anim_up' + str(left_anim_counter)
-            lower_body.texture = 'textures\\main_character\\left_view\\lower_body\\left_anim' + str(left_anim_counter)
-            if left_anim_counter == 8:
-                left_anim_counter = 0
-        if held_keys['a'] == False  and player_facing == "left":
-            upper_body.texture = 'textures\\main_character\\left_view\\upper_body\\left_anim_up' + str(left_anim_counter + 1)
-            lower_body.texture = 'textures\\main_character\\left_view\\lower_body\\left_anim' + str(left_anim_counter + 1)
-            if left_anim_counter >= 1:
-                left_anim_counter -= 1
-        camera.shake(duration=.2, magnitude=0.01, speed=1, direction=(100, 100))
+def LoadingWheel():
+    print('tegecii')
 
 
+app = Ursina()
+window.color = color.white
+info_text = Text('''Press space to start loading textures''', origin=(0,0), color=color.black)
+from ursina.prefabs.health_bar import HealthBar
 
+def load_textures():
+    textures_to_load = ['brick', 'shore', 'grass', 'heightmap'] * 50
+    bar = HealthBar(max_value=len(textures_to_load), value=0, position=(-.5,-.35,-2), scale_x=1, animation_duration=0, bar_color=color.gray)
+    for i, t in enumerate(textures_to_load):
+        load_texture(t)
+        print(i)
+        bar.value = i+1
+    # destroy(bar, delay=.01)
+    print('loaded textures')
 
+def input(key):
+    if key == 'space':
+        info_text.enabled = False
+        t = time.time()
 
+        try:
+            thread.start_new_thread(function=load_textures, args='')
+        except Exception as e:
+            print('error starting thread', e)
 
-
-
-
-
+        print('---', time.time()-t)
+# load_textures()
+# invoke(load_textures, delay=0)
+app.run()
