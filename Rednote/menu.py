@@ -4,8 +4,13 @@
 
 from PIL import Image
 from ursina import *
-from functions import fileread, load_info_from_excel
+from functions import fileread, load_info_from_excel, save_info_to_excel, new_tile_excel, new_info_excel, rawsave_excel, load_to_excel
 from pandas import DataFrame, read_excel
+import os
+import datetime
+from direct.stdpy import thread
+
+
 
 #load screen
 cylinder_spritesheet = 'menu/main_menu/load_screen/cylinder_sheet.png'
@@ -144,17 +149,23 @@ def load_game_pressed(self):
         enable_bit = False
         invoke(enable, delay=0.9)
 
-def new_game_pressed(self): # NEW GAME PRESSED
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+def start_new_game_function(self): # THIS HAPPENS WHEN THE GAME ACTUALLY START
     global status
-
-    Menu.show_new_game_menu(self)
-
-    '''Menu.hide_play_menu(self)
+    Menu.hide_play_menu(self)
     self.canvas.fade_out(value = 0, duration = 1)
     self.canvasbg.fade_out(value = 0, duration = 1)
     self.background.fade_out(value = 0, duration = 1)
     status = 'ingame'
-    self.hud.show_hud()'''
+    self.hud.show_hud()
+
+def new_game_pressed(self): # NEW GAME PRESSED
+    Menu.show_new_game_menu(self)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def exit_game_pressed(a):
     global enable_bit
@@ -245,17 +256,110 @@ def save_game_exit(self):
     self.save_game_text.color = rgb(101,101,101)
 
 ########################################################################################################################
-# NEW GAME CLICK FUNCTIONS
+# NEW GAME CLICK FUNCTIONS # TODO
 
+# THIS FUNCTION RUNS THE LOADING SCREEN AND LOADS THE OBJECT FROM MATRIX
+
+def create_newgame_files(self):
+    self.matrix_data_frame = new_tile_excel(self.matrix.size_x, self.matrix.size_y)  # elkészíti a dataframet a mátrixra
+    self.matrix_info_frame = new_info_excel()  # dataframe az infoset-re
+
+    rawsave_excel(self.matrix_info_frame, f"saves/{self.savename_text.text}/info_data.xlsx", 'infoset')  # elmenti
+    rawsave_excel(self.matrix_data_frame, f"saves/{self.savename_text.text}/tile_data.xlsx", 'tileset')
+
+    self.matrix_info_frame = read_excel(f"saves/{self.savename_text.text}/info_data.xlsx", sheet_name='infoset')  # beolvas
+    save_info_to_excel(self.matrix, self.matrix_info_frame)
+
+    # load infoframe [infoset] to excel
+    rawsave_excel(self.matrix_info_frame, f"saves/{self.savename_text.text}/info_data.xlsx", 'infoset')  # elmenti
+
+    # load dataframe [tileset] to excel
+    load_to_excel(self.matrix_data_frame, self.matrix, f"saves/{self.savename_text.text}/tile_data.xlsx", 'tileset')
+
+def run_loading_screen(self, newgame):
+    if newgame == True:
+        # Alapértékek beállítása az info dictionary-be
+        date = str(datetime.datetime.now()).split(' ')[0]
+        time = str(datetime.datetime.now()).split(' ')[1].split('.')[0].split(':')[0] +':'+ str(datetime.datetime.now()).split(' ')[1].split('.')[0].split(':')[1]
+
+        self.matrix.info_dict['creation_date'] = date
+        self.matrix.info_dict['creation_time'] = time
+        self.matrix.info_dict['all_played_hours'] = '0'
+        self.matrix.info_dict['last_played_hours'] = '0'
+        self.matrix.info_dict['last_played_mins'] = '0'
+
+        self.matrix.info_dict['username'] = self.savename_text.text
+        self.matrix.info_dict['season'] = 'Spring'
+        self.matrix.info_dict['day'] = '1'
+        self.matrix.info_dict['bank_balance'] = '599'
+        self.matrix.info_dict['wallet'] = '23'
+        self.matrix.info_dict['cheats'] = 'Disabled'
+        self.matrix.info_dict['mission'] = '1'
+
+        self.matrix.info_dict['health'] = '25'
+        self.matrix.info_dict['health_core'] = '50'
+        self.matrix.info_dict['energy'] = '100'
+        self.matrix.info_dict['energy_core'] = '50'
+        self.matrix.info_dict['power'] = '50'
+        self.matrix.info_dict['power_core'] = '10'
+        self.matrix.info_dict['hunger'] = '85'
+        self.matrix.info_dict['hunger_core'] = '50'
+        self.matrix.info_dict['thirst'] = '75'
+        self.matrix.info_dict['thirst_core'] = '50'
+
+        self.load_screen_cylinder.alpha = 1
+        self.load_screen_cylinder.play_animation('run_cylinder')
+
+        invoke(start_new_game_function, self, delay = 8)
+
+    if not newgame:
+        pass
+
+# ---------------------------------------------------------------------------------------------------------------------- #
+
+def start_newgame_click(self):
+    self.savename_text.text = "".join([char for char in self.savename_text.text if char != " "])
+    self.name_text.text = self.name_text.text.capitalize()
+    if self.savename_text.text != '':
+        if not os.path.exists(f'saves/{self.savename_text.text}'): # Megnézi létezik-e ilyen mappa
+            invoke(run_loading_screen, self, True, delay=0.8)
+
+            os.mkdir(f'saves/{self.savename_text.text}') # Ha nem, akkor csinál
+            thread.start_new_thread(function=create_newgame_files, args=[self])
+
+            # ----------------------------------------------------------------------------------------------------------
+            self.menu_title.animate_position([-2, 0.46, 0], curve=curve.in_quart, duration=0.12, delay=0.5)
+            self.splitter_up.fade_out(value=0, duration=0.7, delay=0.1)
+            self.splitter_down.fade_out(value=0, duration=0.7, delay=0.1)
+            self.back_fromplay.fade_out(value=0, duration=0.5, delay=0.5)
+            self.click_area_back_fromplay.disable()
+            self.back_fromplay.text = ""
+            Menu.hide_new_game_menu(self)
+            # ----------------------------------------------------------------------------------------------------------
+
+        else:
+            print('Ez mán létezik he')
+    else:
+        print('Az van, hogy ez üres...')
 
 def cheats_click(self, right):
-    pass
+    self.player.cheats = not self.player.cheats
 
+    if self.player.cheats:
+        self.cheats_status_txt.text = self.language_file[0].get('ON')
+    if not self.player.cheats:
+        self.cheats_status_txt.text = self.language_file[0].get('OFF')
 
-def cheats_hover(self, right):
-    pass
-def cheats_leave(self, right):
-    pass
+def cheats_hover(self):
+    self.color = rgb(190,10,10)
+def cheats_leave(self):
+    self.color = rgb(190,100,100)
+
+def start_newgame_hover(self):
+    self.start_newgame_txt.color = rgb(190,10,10)
+
+def start_newgame_leave(self):
+    self.start_newgame_txt.color = rgb(190,50,50)
 
 # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -279,7 +383,7 @@ class Menu(Entity):
         self.canvas = Entity(color = color.black, model= 'quad', scale=(1.920, 1.080, 0), position = [0, 0, 0.1], parent = camera.ui)
         self.canvasbg = Entity(texture = noise, model='quad', scale=(1.920, 1.080, 0), position=[0, 0, 0.08], parent=camera.ui)
         self.background = Entity(texture = morning_bg1, model='quad', scale=(1.920, 1.080, 0), position=[0, -0.0, 0], parent=camera.ui)
-        self.vignette = Entity(texture=vignette, model='quad', scale=(1.920, 1.080, 0), position=[0, -0.0, 0], parent=camera.ui)
+        self.vignette = Entity(texture=vignette, model='quad', scale=(1.920, 1.080, 0), position=[0, -0.0, -0.02], parent=camera.ui)
 
         # Play menüben a cím
         self.menu_title = Text(text="", position=[-2, 0.46, 0], color=rgb(126, 126, 101), parent=camera.ui,font='fonts/CHINESER.TTF', scale=[1.7, 1.5, 0])
@@ -357,18 +461,34 @@ class Menu(Entity):
         show_outside_init() # kint van a class és a hozzá tartozó függvények felett.
 
         ################################################################################################################
-        # NEW GAME Menu
+        # NEW GAME Menu # TODO
 
-        self.username_txt = Text(text = "Your name", position=[-0.7, 0.22, 0], color=rgb(190, 50, 60), parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.8)
-        self.cheats_txt = Text(text = "Allow cheats", position=[-0.7, 0.15, 0], color=rgb(190, 101, 101), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+        self.savename_txt = Text(text = "", position=[-0.7, 0.29, 0], color=rgb(190, 50, 60), parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.8)
 
-        self.cheats_left_txt = Text(text = "-", position=[-0.4, 0.15, 0], color=rgb(190, 101, 101), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
-        self.cheats_right_txt = Text(text = "-", position=[-0.3, 0.15, 0], color=rgb(190, 101, 101), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+        self.savename_text = TextField(max_lines=1, text='', parent=camera.ui, font='fonts/CHINESER.TTF', position=[-0.45, 0.275, 0], scale=[1.5, 1.4, 0], character_limit=18)
+        self.savename_text.bg.visible = False
+        self.savename_text.disable()
 
-        self.cheats_right_clickable = Entity(alpha=1, scale=(0.5, 0.1, 0), position = self.cheats_right_txt, model='quad', collider='box', parent=camera.ui, on_click = Func(cheats_click, self, True), on_mouse_enter=Func(cheats_hover, self, True), on_mouse_exit=Func(cheats_leave, self, True))
-        self.cheats_left_clickable = Entity(alpha=1, scale=(0.5, 0.1, 0), position = self.cheats_right_txt, model='quad', collider='box', parent=camera.ui, on_click = Func(cheats_click, self, False), on_mouse_enter=Func(cheats_hover, self, False), on_mouse_exit=Func(cheats_leave, self, False))
+        self.username_txt = Text(text = "", position=[-0.7, 0.22, 0], color=rgb(190, 50, 60), parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.8)
 
+        self.name_text = TextField(max_lines = 1, text='', parent=camera.ui, font = 'fonts/CHINESER.TTF', position=[-0.45, 0.215, 0], scale = [1.5, 1.4, 0], character_limit = 18)
+        self.name_text.bg.visible = False
+        self.name_text.disable()
 
+        self.cheats_txt = Text(text = "", position=[-0.7, 0.15, 0], color=rgb(190, 100, 100), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+        self.cheats_left_txt = Text(text = "", position=[-0.4, 0.15, 0], color=rgb(190, 100, 100), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+        self.cheats_right_txt = Text(text = "", position=[-0.3, 0.15, 0], color=rgb(190, 100, 100), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+
+        self.cheats_right_clickable = Entity(alpha = 0, origin = (-0.2,0.2), scale=(0.05, 0.05, 0), position = self.cheats_right_txt.position, model='quad', collider='box', parent=camera.ui, on_click = Func(cheats_click, self, True), on_mouse_enter=Func(cheats_hover, self.cheats_right_txt), on_mouse_exit=Func(cheats_leave, self.cheats_right_txt))
+        self.cheats_left_clickable  = Entity(alpha = 0, origin = (-0.2,0.2), scale=(0.05, 0.05, 0), position = self.cheats_left_txt.position, model='quad', collider='box', parent=camera.ui, on_click = Func(cheats_click, self, False), on_mouse_enter=Func(cheats_hover, self.cheats_left_txt), on_mouse_exit=Func(cheats_leave, self.cheats_left_txt))
+        self.cheats_status_txt = Text(text = "", origin = (0,0), position=[-0.345, 0.135, 0], color=rgb(190, 50, 50), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+
+        self.start_newgame_txt = Text(text = "", position=[-0.7, -0.1, 0], color=rgb(190, 50, 50), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.4, 1.2, 0])
+        self.start_newgame_clickable = Entity(alpha = 0, origin = (-0.4,0.2), scale=(0.18, 0.05, 0), position = self.start_newgame_txt.position, model='quad', collider='box', parent=camera.ui, on_click = Func(start_newgame_click, self), on_mouse_enter=Func(start_newgame_hover, self), on_mouse_exit=Func(start_newgame_leave, self))
+
+        self.cheats_right_clickable.disable()
+        self.cheats_left_clickable.disable()
+        self.start_newgame_clickable.disable()
 
         ################################################################################################################
         # QUIT Menu
@@ -552,6 +672,7 @@ class Menu(Entity):
         menu_loadbar_pressed = False
 
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    # TODO
 
     def show_new_game_menu(self):
         self.location = 'newgame'
@@ -561,12 +682,43 @@ class Menu(Entity):
 
         Menu.hide_play_menu(self)
 
+        self.username_txt.text = self.language_file[0].get('NAME')
+        self.name_text.enable()
+        self.cheats_txt.text = self.language_file[0].get('ALLOWCHEATS')
+        self.cheats_left_txt.text = '-'
+        self.cheats_right_txt.text = '-'
+        self.cheats_right_clickable.enable()
+        self.cheats_left_clickable.enable()
+        if self.player.cheats == True:
+            self.cheats_status_txt.text = self.language_file[0].get('ON')
+        else:
+            self.cheats_status_txt.text = self.language_file[0].get('OFF')
+        self.start_newgame_txt.text = self.language_file[0].get('STARTGAME')
+        self.start_newgame_clickable.enable()
+
+        self.savename_txt.text = self.language_file[0].get('SAVENAME')
+        self.savename_text.enable()
+
+
+
         # --------------------------------------------------------------------------------------------------------------
 
         self.username_txt.text = self.language_file[0].get('NAME')
 
     def hide_new_game_menu(self):
         self.username_txt.text = ''
+        self.name_text.disable()
+        self.cheats_txt.text = ''
+        self.cheats_left_txt.text = ''
+        self.cheats_right_txt.text = ''
+        self.cheats_right_clickable.disable()
+        self.cheats_left_clickable.disable()
+        self.cheats_status_txt.text = ''
+        self.start_newgame_txt.text = ''
+        self.start_newgame_clickable.disable()
+
+        self.savename_txt.text = ''
+        self.savename_text.disable()
 
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -671,7 +823,7 @@ class Menu(Entity):
         self.menu_title.appear(speed=.025, delay=0.15)
 
     #######################################################################################
-
+    # TODO
     def back(self):
         back_pressed(self)
 
@@ -686,8 +838,7 @@ def loadbar_double_click(self, menu): # start game
     menu.back_fromplay.text = ''
     menu.location = 'loading_screen'
 
-    menu.load_screen_cylinder.alpha = 1
-    menu.load_screen_cylinder.play_animation('run_cylinder')
+    invoke(run_loading_screen, self, False, delay = 1)
 
 def loadbar_hovered(self, menu):
     global menu_loadbar_pressed, title_txt, date_txt, usrname_label, ingame_date_label, wealth_label, creation_date_label, playtime_label, \
@@ -723,8 +874,9 @@ def loadbar_hovered(self, menu):
         # Címkék
 
         title_txt.text = self.loadbar_text.text
-        update_date = self.loadbar_text_date.text.split('-')[1].split('/')
-        date_txt.text = f'{update_date[0]} / {update_date[1]} / {update_date[2]}          {self.loadbar_text_date.text.split("-")[0]}'
+        update_date = self.loadbar_text_date.text.split('-')
+        print(self.loadbar_text_date.text)
+        date_txt.text = f'{update_date[1]} / {update_date[2]} / {update_date[3]}          {update_date[0]}'
 
         usrname_label.text = self.language_file[0].get('Player')
         ingame_date_label.text = self.language_file[0].get('Season')

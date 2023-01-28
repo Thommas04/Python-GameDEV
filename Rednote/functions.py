@@ -128,8 +128,9 @@ def new_info_excel():
 # -----------------------------------------------------------------------------------[]
 
 def save_info_to_excel(matrix, data_frame):
-    for i in range(11): # teljes - 2
+    for i in range(22): # teljes - 2
         data_frame['VALUE'][i] = matrix.info_dict[str(data_frame['TITLE'][i])]
+    print(matrix.info_dict)
 
 def load_info_from_excel(matrix, data_frame):
     for i in range(11): # teljes - 2

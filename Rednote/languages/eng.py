@@ -20,7 +20,12 @@ def set_language():
                  'SaveGame': 'Save game',
                  'LOADTITLE': 'LOAD GAME',
                  'NEWGAMETITLE' : 'NEW GAME',
-                 'NAME' : 'Your name',
+                 'NAME' : 'Your name : ',
+                 'ON' : 'On',
+                 'OFF' : 'Off',
+                 'STARTGAME' : 'Start Game',
+                 'ALLOWCHEATS': 'Allow cheats :',
+                 'SAVENAME' : 'Save name : ',
 
                  'Player': 'Player :',
                  'Season': 'Season :',

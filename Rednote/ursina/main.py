@@ -93,6 +93,11 @@ class Ursina(ShowBase):
         # make sure it's running from a file and not an interactive session.
         application.hot_reloader = HotReloader(__main__.__file__ if hasattr(__main__, '__file__') else 'None')
 
+        try:
+            from ursina import gamepad
+        except e as Exception:
+            print(e)
+
         window.make_editor_gui()
         if 'editor_ui_enabled' in kwargs:
             window.editor_ui.enabled = kwargs['editor_ui_enabled']
@@ -156,7 +161,11 @@ class Ursina(ShowBase):
         if not 'mouse' in key:
             for prefix in ('control-', 'shift-', 'alt-'):
                 if key.startswith(prefix):
-                    return
+                    key = key.replace('control-', '')
+                    key = key.replace('shift-', '')
+                    key = key.replace('alt-', '')
+                    if key in keyboard_keys:
+                        return
 
         if key in self._input_name_changes:
             key = self._input_name_changes[key]
@@ -190,10 +199,10 @@ class Ursina(ShowBase):
 
     def text_input(self, key):
         key_code = ord(key)
-        if key_code < 32 or key_code >= 127 and key_code <= 160:
+        if key_code < 32 or (key_code >= 127 and key_code <= 160):
             return
 
-        if input_handler.held_keys['control'] or key != ' ' and key.isspace():
+        if key == ' ' and input_handler.held_keys['control']:
             return
 
         if not application.paused:
