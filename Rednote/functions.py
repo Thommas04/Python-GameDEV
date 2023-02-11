@@ -17,13 +17,23 @@ def create_net():
 
 # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-def input(key):
-    if key == 'left mouse down':
-        try:
-            print("(", floor(mouse.world_point.x),", ", floor(mouse.world_point.y),"),", sep = "")
-            Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -0.001 ), scale = 10, text = str(floor(mouse.world_point.x)) + " / " + str(floor(mouse.world_point.y)))
-            Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.005, world_position = (mouse.world_point.x, mouse.world_point.y, 0 )  )
-        except: pass
+a1 = ''
+clk_counter = 0
+def give_back_clicked_pos():
+    global clk_counter, a1
+    try:
+
+        if clk_counter == 0:
+            a1 = f'[({round(mouse.world_point.x, 1)},{round(mouse.world_point.y, 1)}'
+            clk_counter += 1
+
+        elif clk_counter == 1:
+            print(f'{a1}),({round(mouse.world_point.x,1)},{round(mouse.world_point.y,1)})],')
+            clk_counter = 0
+
+        Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -0.001 ), scale = 10, text = str(floor(mouse.world_point.x)) + " / " + str(floor(mouse.world_point.y)))
+        Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.05, world_position = (mouse.world_point.x, mouse.world_point.y, 0 )  )
+    except: pass
 
 # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 # File line rewriter # Rewrites the selected line in the file < line starts with 1 >
@@ -146,7 +156,6 @@ def rawsave_excel(data_frame, path, sheet):
 
 # Az excel fájlból beolvassa a mátrixba
 def load_from_excel(data_frame, matrix, excel_path):
-    print('indulamandula')
     for y in range(matrix.size_y):
         for x in range(matrix.size_x):
 
@@ -158,7 +167,6 @@ def load_from_excel(data_frame, matrix, excel_path):
 
 # A mátrixból beolvassa az excel fájlba
 def load_to_excel(data_frame, matrix, excel_path, sheet):
-    print('indulacucc')
     for y in range(matrix.size_y):
         for x in range(matrix.size_x):
 

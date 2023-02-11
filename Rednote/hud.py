@@ -40,7 +40,9 @@ core_bg_spritesheet = 'hud/hud_widgets/cores/core_bg_sheet.png'
 
 inventory_background = 'hud/inventory/widgets/inventory_bg.png'
 inventory_buttons_spritesheet = 'hud/inventory/widgets/inventory_buttons_sheet.png'
-inventory_selected_tile = 'hud/inventory/widgets/inventory_selected_tile.png'
+inventory_hovered_tile = 'hud/inventory/widgets/inventory_hover.png'
+inventory_selected_tile = 'hud/inventory/widgets/inventory_selected.png'
+amount_bg = 'hud/inventory/widgets/amount_bg.png'
 
 # INVENTORY # ------------------------------------------------------------*
 # Builder MODE HUD
@@ -248,6 +250,7 @@ class HUD(Entity):
         self.bullet_icon.alpha = 0
 
     def show_ammo_text(self, revolver_ammo, full_ammo):
+        print('tegeccci')
         self.ammo_loaded.text = revolver_ammo
         self.ammo_loaded_shadow.text = revolver_ammo
         self.ammo_remain.text = full_ammo
@@ -430,30 +433,30 @@ class HUD(Entity):
         # -------------------------------------------------------------------------------------------------------------
         # PRINT MONEY AND AMMO
 
-        self.ammo_remain_shadow = Text(text = '', position=[0.782, 0.453, 0], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
-        self.ammo_loaded_shadow = Text(text = '', position=[0.778, 0.435, 0], origin=(0.5, 0), color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.ammo_remain_shadow = Text(text = '', position=[0.782, 0.453, -0.03], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.ammo_loaded_shadow = Text(text = '', position=[0.778, 0.435, -0.03], origin=(0.5, 0), color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
 
 
-        self.ammo_remain = Text(text = '', position=[0.78, 0.455, -0.01], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
-        self.ammo_loaded = Text(text = '', position=[0.775, 0.438, -0.01], origin=(0.5, 0), color = rgb(198,205,205), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.ammo_remain = Text(text = '', position=[0.78, 0.455, -0.04], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.ammo_loaded = Text(text = '', position=[0.775, 0.438, -0.04], origin=(0.5, 0), color = rgb(198,205,205), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
         self.bullet_icon = Entity(texture = screen_icons, model='quad', position = [0.84, 0.439, -0.01], alpha=0, parent=camera.ui, tileset_size=[3, 1], tile_coordinate = [2,0],  scale=(0.05, 0.05))
 
         # -----[]
 
-        self.cash_inhand_cents_shadow = Text(text = '', position=[0.779, 0.453, 0], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
-        self.cash_inbank_cents_shadow = Text(text = '', position=[0.779, 0.403, 0], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
-        self.cash_inhand_shadow = Text(text = '', position=[0.773, 0.435, 0], color = color.black, origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
-        self.cash_inbank_shadow = Text(text = '', position=[0.773, 0.385, 0], color = color.black, origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.cash_inhand_cents_shadow = Text(text = '', position=[0.779, 0.453, -0.03], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.cash_inbank_cents_shadow = Text(text = '', position=[0.779, 0.403, -0.03], color = color.black, parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.cash_inhand_shadow = Text(text = '', position=[0.773, 0.435, -0.03], color = color.black, origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.cash_inbank_shadow = Text(text = '', position=[0.773, 0.385, -0.03], color = color.black, origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
 
 
-        self.cash_inhand_cents = Text(text = '', position=[0.775, 0.405, -0.01], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
-        self.cash_inbank_cents = Text(text = '', position=[0.775, 0.455, -0.01], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.cash_inhand_cents = Text(text = '', position=[0.775, 0.405, -0.04], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
+        self.cash_inbank_cents = Text(text = '', position=[0.775, 0.455, -0.04], color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1)
 
-        self.cash_inhand = Text(text = '', position=[0.77, 0.388, -0.01], color = rgb(198,205,205), origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
-        self.cash_inbank = Text(text = '', position=[0.77, 0.438, -0.01], color = rgb(198,205,205), origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.cash_inhand = Text(text = '', position=[0.77, 0.388, -0.04], color = rgb(198,205,205), origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
+        self.cash_inbank = Text(text = '', position=[0.77, 0.438, -0.04], color = rgb(198,205,205), origin=(0.5, 0), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.4)
 
-        self.cash_inbank_icon = Entity(texture = screen_icons, model='quad', position = [0.84, 0.44, -0.01], alpha=0, parent=camera.ui, tileset_size=[3, 1], tile_coordinate = [0,0],  scale=(0.05, 0.05))
-        self.cash_inhand_icon = Entity(texture = screen_icons, model='quad', position = [0.84, 0.39, -0.01], alpha=0, parent=camera.ui, tileset_size=[3, 1], tile_coordinate = [1,0],  scale=(0.05, 0.05))
+        self.cash_inbank_icon = Entity(texture = screen_icons, model='quad', position = [0.84, 0.44, -0.03], alpha=0, parent=camera.ui, tileset_size=[3, 1], tile_coordinate = [0,0],  scale=(0.05, 0.05))
+        self.cash_inhand_icon = Entity(texture = screen_icons, model='quad', position = [0.84, 0.39, -0.03], alpha=0, parent=camera.ui, tileset_size=[3, 1], tile_coordinate = [1,0],  scale=(0.05, 0.05))
 
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
@@ -509,7 +512,61 @@ class HUD(Entity):
 ########################################################################################################################
 # INVENTORY #
 
+
+dict_x = {0.75 : 3, 0.5 : 2, 0.25 : 1, 0.0 : 0}
+dict_y = {-0.75 : 0, -0.5 : 1, -0.25 : 2, 0.0 : 3}
+
+
 class Inventory(Entity):
+    def mouse_hover_invslot(self, position):
+        self.highlighted_tile.position = [position[0] + 0.005, position[1], position[2]]
+        self.highlighted_tile.alpha = 1
+
+    def draggable_mouse_hover(self, x, y, mouse):
+        try:
+            if not mouse:
+                self.highlighted_tile.position = [self.position.x + 0.108 * dict_x[x] + 0.055, self.position.y + 0.108 * dict_y[y] - 0.38, -0.1]
+                self.highlighted_tile.alpha = 1
+            else:
+                self.highlight_click_tile.position = [self.position.x + 0.108 * dict_x[x] + 0.055, self.position.y + 0.108 * dict_y[y] - 0.38, -0.1]
+                self.highlight_click_tile.alpha = 1
+                self.highlighted_tile.alpha = 0
+        except:
+            pass
+
+    # Ha kétszer megnyomod a balklikket valamelyik itemen.
+    def draggable_mouse_double_click(self, tag): # TODO tag[0] = Tárgy neve ; tag[1] = kategória ; tag[2] = darabszám
+        for child in self.children:
+            if child.tag[0] == tag[0]:
+
+                child.tag[2] -= 1
+
+                # child.children[0] -> entity bg, [1] -> text
+                child.children[1].text = child.tag[2]
+
+                if child.tag[2] <= 1:
+                    child.children[0].visible = False
+                    child.children[1].visible = False
+
+                if child.tag[2] >= 2:
+                    child.children[0].visible = True
+                    child.children[1].visible = True
+
+                if child.tag[2] <= 0:
+                    self.highlight_click_tile.alpha = 0
+                    destroy(child)
+        print(child.tag[0])
+
+
+
+
+
+
+
+
+
+
+
     def __init__(self, pause_menu, **kwargs):
         super().__init__(
             parent = camera.ui,
@@ -529,30 +586,50 @@ class Inventory(Entity):
         self.pause_menu = pause_menu
         self.background = Entity(texture = inventory_background, alpha = 0, scale = (0.62, 1.024, -0.12), position=[0, 0, 0], model='quad', parent=camera.ui)
 
+        # for hovered
+        self.highlighted_tile = Entity(texture = inventory_hovered_tile, alpha = 0, scale = (0.116, 0.12, 0), position=[0, 0, 0], model='quad', parent=camera.ui)
+        # for clicked
+        self.highlight_click_tile = Entity(texture = inventory_selected_tile, alpha = 0, scale = (0.116, 0.12, 0), position=[0, 0, 0], model='quad', parent=camera.ui)
+
+        inv_x = [0,1,2,3]
+        inv_y = [0,1,2,3]
+
+        self.inventory_clicks_list = []
+        for x in inv_x:
+            for y in inv_y:
+                self.inventory_clicks = Entity(alpha = 0, scale = 0.1, position = [self.position.x + 0.108 * x + 0.05, self.position.y + 0.108 * y - 0.38, -0.1], model='quad', collider='box', parent=camera.ui, on_mouse_enter=Func(Inventory.mouse_hover_invslot, self, [self.position.x + 0.108 * x + 0.05, self.position.y + 0.108 * y - 0.38, -0.04]) )
+                self.inventory_clicks_list.append(self.inventory_clicks)
+
+        for click in self.inventory_clicks_list:
+            click.disable()
+
+
+
+
+
     # [] ------------------------------------------------------------------------------------------------------------- []
 
     def find_free_spot(self, tagged): # Keres egy üres helyet, és visszadja az x, y koordinátáját.
         for y in range(4):
             for x in range(4):
 
-                new_children_list = []
+                self.new_children_list = [] # TODO próbáld meg ezt használni, hogy vissza tudd szerezni az értékeket plz.
                 for i in self.children:
                     if i.tag[1] == tagged:
-                        new_children_list.append(i)
+                        self.new_children_list.append(i)
 
-                grid_positions = [(int(e.x*self.texture_scale[0]), int(e.y*self.texture_scale[1])) for e in new_children_list]
-                print(grid_positions)
+                self.grid_positions = [(int(e.x*self.texture_scale[0]), int(e.y*self.texture_scale[1])) for e in self.new_children_list]
 
-                if not (x,-y) in grid_positions:
+                if not (x,-y) in self.grid_positions:
                     return x, y
 
     # [] ------------------------------------------------------------------------------------------------------------- []
 
     def remove(self, name, category):
         for item in self.children:
-            print(item)
+            destroy(item)
 
-    def append(self, item, tagged, x = 0, y = 0): # Hozzáad egy itemet
+    def append(self, item, tagged, amount, x = 0, y = 0): # Hozzáad egy itemet
         if len(self.children) >= 4*4: # Lefut, ha tele az inventory
             print('inventory full')
             return
@@ -561,7 +638,22 @@ class Inventory(Entity):
 
         icon = Draggable(parent = self, model = 'quad', texture = item, color = color.white,
             scale_x = 1 / self.texture_scale[0], scale_y = 1 / self.texture_scale[1], origin = (-.5,.5),
-            x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], z = -.5, tag = [item, tagged])
+            x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], z = -.5, tag = [item, tagged, amount],
+            on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], mouse = False),
+            on_click = Func(Inventory.draggable_mouse_hover, self, x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], mouse = True),
+            on_double_click = Func(Inventory.draggable_mouse_double_click, self, tag = [item, tagged, amount]))
+
+
+        amount_background = Entity(texture = amount_bg, alpha = 1, model='quad', origin = (1,1), scale=(0.44, 0.44, 0), position = [1.2, -0.3, -0.1], parent=icon)
+        amount_txt = Text(text = amount, origin = (0,0), position = [0.75, -0.77, -0.12], color=rgb(40,40,40), parent=icon, font='fonts/CHINESER.TTF', scale=10)
+        amount_background.visible = False
+        amount_txt.visible = False
+
+        if amount > 1:
+            amount_background.visible = True
+            amount_txt.visible = True
+
+        icon.disable()
 
         name = item.replace('_', ' ').title()
 
@@ -569,16 +661,26 @@ class Inventory(Entity):
 
         def drag():
             icon.org_pos = (icon.x, icon.y)
-            icon.z -= .01   # azért, hogy a megragadott item a többi réteg felett legyen
-
+            icon.z = -0.3 # azért, hogy a megragadott item a többi réteg felett legyen
+            icon.children[0].z = -0.112
+            icon.children[1].z = -0.114
         def drop():
-            icon.x = int((icon.x + (icon.scale_x/2)) * 4) / 4
-            icon.y = int((icon.y - (icon.scale_y/2)) * 4) / 4
-            icon.z += .01
+            icon.x = int((icon.x + (icon.scale_x / 2)) * 4) / 4
+            icon.y = int((icon.y - (icon.scale_y / 2)) * 4) / 4
+            icon.z = -0.1
+            icon.children[0].z = -0.105
+            icon.children[1].z = -0.108
+
+            icon.on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x = icon.x, y = icon.y, mouse = False)
+            icon.on_click = Func(Inventory.draggable_mouse_hover, self, x = icon.x, y = icon.y, mouse = True)
+            try:
+                self.highlight_click_tile.position = [self.position.x + 0.108 * dict_x[icon.position.x] + 0.055, self.position.y + 0.108 * dict_y[icon.position.y] - 0.38, -0.1]
+            except: print('Key Error : Nincs a szótárban')
 
             # Ha rossz helyre húzta kerüljön vissza az eredeti helyére.
             if icon.x < 0 or icon.x >= 1 or icon.y > 0 or icon.y <= -1:
                 icon.position = (icon.org_pos)
+                self.highlight_click_tile.alpha = 0
                 return
 
             # Ha a pozíció foglalt, cseréljenek helyet
@@ -589,6 +691,9 @@ class Inventory(Entity):
                 if c.tag[1] == icon.tag[1]:
                     if c.x == icon.x and c.y == icon.y:
                         c.position = icon.org_pos
+                        c.on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x=c.x, y=c.y, mouse=False)
+                        c.on_click = Func(Inventory.draggable_mouse_hover, self, x=c.x, y=c.y, mouse=True)
+                        self.highlight_click_tile.position = [self.position.x + 0.108 * dict_x[icon.position.x] + 0.055, self.position.y + 0.108 * dict_y[icon.position.y] - 0.38, -0.1]
 
         icon.drag = drag
         icon.drop = drop
@@ -606,6 +711,10 @@ class Inventory(Entity):
         for item in self.children:
             item.fade_in(value=1, duration=0.3, delay=0.02)
             invoke(Inventory.show_items_delay, self, item, delay = 0.1)
+        for click in self.inventory_clicks_list:
+            click.enable()
+        for i in self.children:
+            i.enable()
 
     def hide_inventory(self):
         self.visible = False
@@ -614,9 +723,35 @@ class Inventory(Entity):
         for item in self.children:
             item.fade_in(value=0, duration=0.3, delay=0.02)
             invoke(Inventory.hide_items_delay, self, item, delay = 0.5)
+        for click in self.inventory_clicks_list:
+            click.disable()
+        self.highlighted_tile.fade_in(value=0, duration=0.3, delay=0.02)
+        self.highlight_click_tile.fade_in(value=0, duration=0.3, delay=0.02)
+        for i in self.children:
+            i.disable()
 
-    def add_item(self, _item_, category):
-        self.append(item = _item_, tagged = category)
+    def add_item(self, _item_, category, item_amount):
+        current_item_ids = []
+        for i in self.children:
+            current_item_ids.append(i.tag[0])
+
+        if _item_ not in current_item_ids:
+            self.append(item = _item_, tagged = category, amount = item_amount)
+            print('Még nem létezett, szóval létrehoztam')
+
+        else:
+            for child in self.children:
+                if child.tag[0] == _item_:
+                    child.tag[2] += item_amount
+                    child.children[1].text = child.tag[2]
+                    print('Már létezik')
+
+
+
+
+
+
+
 
 ########################################################################################################################
 # BUILDER MODE #

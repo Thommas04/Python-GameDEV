@@ -1,9 +1,52 @@
 
 from ursina import *
+from panda3d.core import CardMaker
+from panda3d.core import PointLight
+
+from direct.showbase.ShowBase import ShowBase
+
+light_dictionary = {'street_lamp' : (0.1, 0.01, 0.0),
+                    'oil_lamp' : (0.5, 0, 1),
+                    }
+
+class LightSource():
+    def __init__(self, host, position = [0, 0], attenuation = (0.1, 0.01, 0.0), color = [1,1,1], type = None):
+        self.light_node = PointLight('light 1')
+        self.light = render.attach_new_node(self.light_node)
+        base.render.set_light(self.light)
+        self.light.set_pos(position[0], position[1], -0.5)
+        render.setShaderAuto()
+        self.light_node.setColor((color[0], color[1], color[2], 10))
+
+        if type == None:
+            self.light_node.set_attenuation((0.1, 0.01, 0.0))
+        else:
+            self.light_node.set_attenuation(light_dictionary[type])
+
+        host.lights_list.append(self)
+
+    #-------------------------------------------------------------------------------------------------------------------
+    def new_position(self, x, y):
+        self.light.set_pos(x, y, -0.5)
+
+    def turn_off(self):
+        pass
+
+    def turn_on(self):
+        pass
+
+    def change_color(self):
+        pass
+
+    def animate_color(self):
+        pass
+
+
+
 
 class LightSystem():
     def __init__(self):
-        self.amibent_light = AmbientLight(color = color.dark_gray)
+        self.amibent_light = AmbientLight(color = rgb(35,35,35))
 
     # A Value-t percekben kapjuk meg
     # 6:00 -> 360
@@ -16,12 +59,12 @@ class LightSystem():
     # WINTER
 
     def time_set(self, value):
-        if value == 361:
+        '''if value == 361:
             self.amibent_light.color = rgb(40,40,42) # Hajnali sötétebb szürkés világítás
             self.amibent_light.animate_color(rgb(179, 207, 226), duration = 10) # Nappali fény
 
         if value == 420: # Kezd lemenni a nap
-            self.amibent_light.animate_color(rgb(137,120,93), duration = 10)
+            self.amibent_light.animate_color(rgb(137,120,93), duration = 10)'''
 
-        if value == 480: # Este
-            self.amibent_light.animate_color(rgb(16, 26, 45), duration = 10)
+        if value == 361: # Este
+            pass#self.amibent_light.animate_color(rgb(16, 26, 45), duration = 10)

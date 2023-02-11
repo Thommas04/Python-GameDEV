@@ -93,10 +93,17 @@ if __name__ == '__main__':
     app = Ursina()
     from ursina.shaders import lit_with_shadows_shader # you have to apply this shader to enties for them to receive shadows.
     EditorCamera()
-    Entity(model='plane', scale=10, color=color.gray, shader=lit_with_shadows_shader)
-    Entity(model='cube', y=1, shader=lit_with_shadows_shader)
-    pivot = Entity()
-    DirectionalLight(parent=pivot, y=2, z=3, shadows=True)
+    #Entity(model='cube', scale=(100,1,100))
 
+    world_canvas = Entity(texture='textures/seasons/map/rustfort_summer.png', origin=(-0.5, -0.5, 0), model='quad',
+                          collider='box', scale=(200, 200, 0), position=(0, 0, .1), tag='canvas')
+
+    Entity(model='cube', x = 0, z = 0, scale=(1, 1, 1))
+
+    AmbientLight(color = color.blue)
+    #AmbientLight(color = color.white)
+    a = PointLight(y = 2, x = 0, color = color.red)
+
+    Entity(model = 'sphere', scale = 1, position = a.position, color = color.yellow)
 
     app.run()

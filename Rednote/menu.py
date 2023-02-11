@@ -162,7 +162,9 @@ def start_new_game_function(self): # THIS HAPPENS WHEN THE GAME ACTUALLY START
     self.hud.show_hud()
 
 def new_game_pressed(self): # NEW GAME PRESSED
-    Menu.show_new_game_menu(self)
+    #Menu.show_new_game_menu(self) # rakd vissza ha befejezeted a dolgaid
+
+    start_new_game_function(self)
 
 # ----------------------------------------------------------------------------------------------------------------------
 

@@ -1,27 +1,21 @@
 from ursina import *
-from direct.stdpy import thread
 
 
 app = Ursina()
-window.color = color.white
 
-Button.color = color._20
-
-
-te = TextField(max_lines=1, scale=1, register_mouse_input = True, text='1234')
-
-
-
-entity = Entity(model = 'cube', scale = 1, color = color.red, position = (0,0,0))
-
-def func():
-    entity.animate_position((0,5,0), duration = 10, curve = curve.linear)
-
+slider = Entity(model='quad', color=color.red, scale_x=0.1, scale_y=2)
+slider.speed = 0
 
 def update():
-    print('tekocog')
+    if mouse.left:
+        slider.speed = 10
+    else:
+        slider.speed -= 0.1
+        slider.y -= slider.speed
 
-thread.start_new_thread(function=func, args='')
+def on_mouse_down():
+    if slider.collision(mouse.point, 0.1):
+        slider.speed = 10
 
-
+EditorCamera()
 app.run()
