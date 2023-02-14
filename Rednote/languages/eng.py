@@ -25,6 +25,7 @@ def set_language():
                  'OFF' : 'Off',
                  'STARTGAME' : 'Start Game',
                  'ALLOWCHEATS': 'Allow cheats :',
+                 'TUTORIAL': 'Tutorial :',
                  'SAVENAME' : 'Save name : ',
 
                  'Player': 'Player :',
@@ -55,5 +56,15 @@ def set_language():
 
     death_screen = {'Continue' : 'Continue'}
 
-    list_of_pack = [main_menu, pause_menu, death_screen]
+    wave_system = {'Wave' : 'Wave',
+                   'Enemy' : 'Enemy',
+                   }
+
+    markers = {'STORE': 'Store',
+               'SHOP': 'Shop',
+               'BUY': 'Buy',
+               'SELL': 'Sell',
+            }
+
+    list_of_pack = [main_menu, pause_menu, death_screen, wave_system, markers]
     return list_of_pack

@@ -5,7 +5,10 @@ from panda3d.core import PointLight
 
 from direct.showbase.ShowBase import ShowBase
 
-light_dictionary = {'street_lamp' : (0.1, 0.01, 0.0),
+# 1, 0, 0.0001 -> ez középen a legerősebb egy egységig, utána lassan nagyobb (20 egységnyi átmérőben megvilágít mindent)
+# 1, 0, 0.02 -> 3-4 egységben megvilágítja a körülötte lévő objektumoka, nem megy távora a fényre.
+
+light_dictionary = {'street_lamp' : ((1, 0, 0.002)),
                     'oil_lamp' : (0.5, 0, 1),
                     }
 
@@ -14,7 +17,7 @@ class LightSource():
         self.light_node = PointLight('light 1')
         self.light = render.attach_new_node(self.light_node)
         base.render.set_light(self.light)
-        self.light.set_pos(position[0], position[1], -0.5)
+        self.light.set_pos(position[0], position[1], -1)
         render.setShaderAuto()
         self.light_node.setColor((color[0], color[1], color[2], 10))
 
@@ -46,7 +49,7 @@ class LightSource():
 
 class LightSystem():
     def __init__(self):
-        self.amibent_light = AmbientLight(color = rgb(35,35,35))
+        self.amibent_light = AmbientLight(color = rgb(255,255,255))
 
     # A Value-t percekben kapjuk meg
     # 6:00 -> 360
@@ -67,4 +70,7 @@ class LightSystem():
             self.amibent_light.animate_color(rgb(137,120,93), duration = 10)'''
 
         if value == 361: # Este
-            pass#self.amibent_light.animate_color(rgb(16, 26, 45), duration = 10)
+            self.amibent_light.animate_color(rgb(16, 26, 45), duration = 10)
+
+        if value == 410: # Este
+            self.amibent_light.animate_color(rgb(60, 60, 45), duration = 10)

@@ -22,14 +22,15 @@ clk_counter = 0
 def give_back_clicked_pos():
     global clk_counter, a1
     try:
+        print(f'[{round(mouse.world_point.x, 1)},{round(mouse.world_point.y, 1)},{round(mouse.world_point.z, 1)}],')
 
-        if clk_counter == 0:
+        '''if clk_counter == 0:
             a1 = f'[({round(mouse.world_point.x, 1)},{round(mouse.world_point.y, 1)}'
             clk_counter += 1
 
         elif clk_counter == 1:
             print(f'{a1}),({round(mouse.world_point.x,1)},{round(mouse.world_point.y,1)})],')
-            clk_counter = 0
+            clk_counter = 0'''
 
         Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -0.001 ), scale = 10, text = str(floor(mouse.world_point.x)) + " / " + str(floor(mouse.world_point.y)))
         Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.05, world_position = (mouse.world_point.x, mouse.world_point.y, 0 )  )
@@ -92,9 +93,6 @@ def new_tile_excel(size_x, size_y):
     for i in range(size_x):
         matrix_dict['reserved_'+ str(matrix_counter)] = matrix_list
         matrix_dict['type_'+ str(matrix_counter)] = matrix_list
-        matrix_dict['hp_'+ str(matrix_counter)] = matrix_list
-        matrix_dict['arg1_' + str(matrix_counter)] = matrix_list
-        matrix_dict['arg2_' + str(matrix_counter)] = matrix_list
 
         matrix_counter += 1
 
@@ -161,9 +159,6 @@ def load_from_excel(data_frame, matrix, excel_path):
 
             matrix.matrix[y][x]['reserved'] = data_frame['reserved_' + str(x)][y]
             matrix.matrix[y][x]['type'] = data_frame['type_' + str(x)][y]
-            matrix.matrix[y][x]['hp'] = data_frame['hp_' + str(x)][y]
-            matrix.matrix[y][x]['arg1'] = data_frame['arg1_' + str(x)][y]
-            matrix.matrix[y][x]['arg2'] = data_frame['arg2_' + str(x)][y]
 
 # A mátrixból beolvassa az excel fájlba
 def load_to_excel(data_frame, matrix, excel_path, sheet):
@@ -172,9 +167,6 @@ def load_to_excel(data_frame, matrix, excel_path, sheet):
 
             data_frame['reserved_' + str(x)][y] = matrix.matrix[y][x]['reserved']
             data_frame['type_' + str(x)][y] = matrix.matrix[y][x]['type']
-            data_frame['hp_' + str(x)][y] = matrix.matrix[y][x]['hp']
-            data_frame['arg1_' + str(x)][y] = matrix.matrix[y][x]['arg1']
-            data_frame['arg2_' + str(x)][y] = matrix.matrix[y][x]['arg2']
 
     data_frame.to_excel(excel_path, sheet_name = sheet, index = False)
 
@@ -182,9 +174,6 @@ def fast_load_to_excel(data_frame, matrix, excel_path, sheet):
     for tile in matrix.updated_tiles:
         data_frame['reserved_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['reserved']
         data_frame['type_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['type']
-        data_frame['hp_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['hp']
-        data_frame['arg1_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['arg1']
-        data_frame['arg2_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['arg2']
     data_frame.to_excel(excel_path, sheet_name = sheet, index = False)
 
 

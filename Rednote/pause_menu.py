@@ -140,7 +140,7 @@ class PauseMenu(Entity):
     # Menü kinyitása
     def show_menu(self):
         global pause_menu_opened, paused
-        self.filters.setBlurSharpen(amount=0)
+
         pause_menu_opened = True
         paused = True
 
@@ -193,6 +193,8 @@ class PauseMenu(Entity):
         self.quit_click.scale = (Text.get_width(self.quit_txt.text) * 2.5, 0.065, 0)
 
         self.hud.hide_hud()
+        self.filters.setBlurSharpen(amount = 0)
+
 
     # Menü bezárása
     def close_menu(self, state):
