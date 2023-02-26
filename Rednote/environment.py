@@ -5,6 +5,8 @@ from random import *
 stumps_spritesheet = 'textures/seasons/trees/stump_sheet.png'
 trees_spritesheet = 'textures/seasons/trees/trees_sheet.png'
 
+rain_spritesheet = 'textures/seasons/weather/rain/rain.png'
+
 # ----------------------------------------------------------------------------------------------------------------------
 
 # oak, maple, pine
@@ -14,7 +16,7 @@ types = {'oak' : [0,0],
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-class Trees(Entity):
+class Trees():
     def on_hover(self):
         self.mouse_on = True
     def on_leave(self):
@@ -32,8 +34,8 @@ class Trees(Entity):
 
         dist = distance([position[0], 0, position[2]], position)
 
-        self.front_layer = -1 * ( 0.24 - (sqrt(dist) / 100) )
-        self.back_layer  = -1 * ( 0.12 - (sqrt(dist) / 100) )
+        self.front_layer = -1 * ( 0.65 - (sqrt(dist) / 100) )
+        self.back_layer  = -1 * ( 0.22 - (sqrt(dist) / 100) )
 
         if self.cut:
             self.tree_stump = Entity(tag = 'none', texture = stumps_spritesheet, model='quad', position = [position[0] - 0.2, position[1], self.front_layer], alpha = 1, tileset_size = [1, 1], tile_coordinate = self.type,  scale = (3, 3))
@@ -48,3 +50,52 @@ class Trees(Entity):
             pass
 
         player.trees_list.append(self)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+class Weather():
+    def __init__(self):
+        self.rain_screen_left = SpriteSheetAnimation(rain_spritesheet, position=[-0.5, 0, 0.3], color = color.white, alpha = 0.1, parent = camera.ui, tileset_size=(30, 1), scale = (1,1) ,fps=30, animations={
+            'rain': ((0, 0), (29, 0)),
+            'stop_rain': ((0, 0), (0, 0)),
+        })
+
+        self.rain_screen_right = SpriteSheetAnimation(rain_spritesheet, position=[0.5, 0, 0.3], color = color.white, alpha=0.1, parent=camera.ui, tileset_size=(30, 1), scale=(1, 1), fps=30, animations={
+            'rain': ((0, 0), (29, 0)),
+            'stop_rain': ((0, 0), (0, 0)),
+        })
+
+        self.rain_screen_left.play_animation('rain')
+        self.rain_screen_right.play_animation('rain')
+
+        #self.menu_theme = Audio('sounds/environment/environment_rain.ogg', loop=True, autoplay=True, balance=0.5, volume = 0.1)
+
+    def start_weather(self, type, ):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -82,6 +82,9 @@ def fileread ( filename : str ) -> list :
 # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 # Working with EXCEL Table
 
+def map_range(x, in_min, in_max, out_min, out_max):
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
 def new_tile_excel(size_x, size_y):
     matrix_dict = {}
     matrix_list = []

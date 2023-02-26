@@ -49,7 +49,7 @@ class LightSource():
 
 class LightSystem():
     def __init__(self):
-        self.amibent_light = AmbientLight(color = rgb(255,255,255))
+        self.amibent_light = AmbientLight(color = rgb(40,40,42))
 
     # A Value-t percekben kapjuk meg
     # 6:00 -> 360
@@ -62,15 +62,16 @@ class LightSystem():
     # WINTER
 
     def time_set(self, value):
-        '''if value == 361:
+        if value == 361:
             self.amibent_light.color = rgb(40,40,42) # Hajnali sötétebb szürkés világítás
-            self.amibent_light.animate_color(rgb(179, 207, 226), duration = 10) # Nappali fény
+            #self.amibent_light.animate_color(rgb(179, 207, 226), duration = 10) # Nappali fény
+            self.amibent_light.animate_color(rgb(20, 20, 80), duration=10)
 
-        if value == 420: # Kezd lemenni a nap
-            self.amibent_light.animate_color(rgb(137,120,93), duration = 10)'''
+        '''if value == 380: # Kezd lemenni a nap
+            self.amibent_light.animate_color(rgb(137,120,93), duration = 10)
 
-        if value == 361: # Este
-            self.amibent_light.animate_color(rgb(16, 26, 45), duration = 10)
+        if value == 420: # Este
+            self.amibent_light.animate_color(rgb(16, 26, 45), duration = 10)'''
 
-        if value == 410: # Este
-            self.amibent_light.animate_color(rgb(60, 60, 45), duration = 10)
+        '''if value == 410: # Este
+            self.amibent_light.animate_color(rgb(60, 60, 45), duration = 10)'''

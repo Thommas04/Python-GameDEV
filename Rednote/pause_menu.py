@@ -80,8 +80,10 @@ class PauseMenu(Entity):
         keyboard.press(Key.esc)
         keyboard.release(Key.esc)
 
+        self.main_menu.start_sound()
         self.main_menu.show_menu()
         self.hud.hide_hud()
+        self.hud.hide_attack_hud()
         self.main_menu.canvas.fade_in(value = 1, duration = 0.4)
         self.main_menu.canvasbg.fade_in(value = 1, duration = 0.4)
 

@@ -163,6 +163,9 @@ def start_new_game_function(self): # THIS HAPPENS WHEN THE GAME ACTUALLY START
 
     self.load_screen_cylinder.alpha = 0
 
+    self.menu_theme.stop(destroy=True)
+    #self.menu_loadscreen_theme.fade_out(value = 0, duration = 5, delay = 0) #eztiss
+
 def new_game_pressed(self): # NEW GAME PRESSED TODO
     #Menu.show_new_game_menu(self) # rakd vissza ha befejezeted a dolgaid
 
@@ -229,6 +232,10 @@ def menu_buttons_exit(a):
 
 ######################################
 
+
+
+
+
 def load_game_hovered(self):
     self.load_game_hightlighted.fade_out(value=1, duration=0)
     self.play_explaining_text.text = self.language_file[0].get('LoadInfo')
@@ -280,6 +287,10 @@ def create_newgame_files(self):
     load_to_excel(self.matrix_data_frame, self.matrix, f"saves/{self.savename_text.text}/tile_data.xlsx", 'tileset')
 
 def run_loading_screen(self, newgame):
+
+    self.menu_theme.fade_out(value = 0, duration = 2, delay = 0)
+    self.menu_loadscreen_theme = Audio('sounds/menu/menu_loadscreen2.ogg', loop=True, autoplay=True, balance=0.5)
+
     if newgame == True:
         # Alapértékek beállítása az info dictionary-be
         date = str(datetime.datetime.now()).split(' ')[0]
@@ -536,6 +547,9 @@ class Menu(Entity):
 
 
     # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    def start_sound(self):
+        self.menu_theme = Audio('sounds/menu/menu_theme.ogg', loop=True, autoplay=True, balance = 0.5)
 
     def show_menu(self): # megjeleníti az alap menüt
         global status
@@ -992,4 +1006,36 @@ class Loads():
 
         for objs in load_info_list:
             objs.fade_in(value=0, duration=0.15, delay=0.05)
+
+class CheatMenu:
+    def __init__(self):
+        self.open = False
+        self.command_bg = Entity(color = color.black, alpha=0, model='quad', origin = (-0.5, 0.5),scale=(0.8, 0.35, 0), position=[-0.9, 0.4, -0.3], parent=camera.ui)
+        self.commandline_bg = Entity(color = color.black, alpha=0, model='quad', origin = (-0.5, 0.5),scale=(0.8, 0.04, 0), position=[-0.9, 0.09, -0.3], parent=camera.ui)
+        self.commandline_textfield = TextField(active = False, max_lines=1, text='', parent=camera.ui, font='fonts/Profontwindows-L3amg.ttf', position=[-0.88, 0.09, -0.3], scale=(0.8, 1.4, 0), character_limit=80, origin = (-0.5, 0.5))
+        self.commandline_textfield.bg.visible = False
+        self.commandline_textfield.character_width = Text.get_width('p', font=self.commandline_textfield.font)
+
+    def open_cheatmenu(self):
+        self.open = True
+        self.command_bg.alpha = 0.4
+        self.commandline_bg.alpha = 0.4
+        self.commandline_textfield.active = True
+        self.commandline_textfield.alpha = 1
+
+    def hide_cheatmenu(self):
+        self.open = False
+        self.command_bg.alpha = 0
+        self.commandline_bg.alpha = 0
+        self.commandline_textfield.active = False
+        self.commandline_textfield.alpha = 0
+
+
+
+
+
+
+
+
+
 

@@ -10,7 +10,7 @@ def update():
     if mouse.left:
         slider.speed = 10
     else:
-        slider.speed -= 0.1
+        slider.speed -= 0.000001
         slider.y -= slider.speed
 
 def on_mouse_down():
