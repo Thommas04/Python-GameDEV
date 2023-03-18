@@ -55,12 +55,12 @@ class Trees():
 
 class Weather():
     def __init__(self):
-        self.rain_screen_left = SpriteSheetAnimation(rain_spritesheet, position=[-0.5, 0, 0.3], color = color.white, alpha = 0.1, parent = camera.ui, tileset_size=(30, 1), scale = (1,1) ,fps=30, animations={
+        self.rain_screen_left = SpriteSheetAnimation(rain_spritesheet, position=[-0.5, 0, 0.3], color = color.white, alpha = 0, parent = camera.ui, tileset_size=(30, 1), scale = (1,1) ,fps=30, animations={
             'rain': ((0, 0), (29, 0)),
             'stop_rain': ((0, 0), (0, 0)),
         })
 
-        self.rain_screen_right = SpriteSheetAnimation(rain_spritesheet, position=[0.5, 0, 0.3], color = color.white, alpha=0.1, parent=camera.ui, tileset_size=(30, 1), scale=(1, 1), fps=30, animations={
+        self.rain_screen_right = SpriteSheetAnimation(rain_spritesheet, position=[0.5, 0, 0.3], color = color.white, alpha=0, parent=camera.ui, tileset_size=(30, 1), scale=(1, 1), fps=30, animations={
             'rain': ((0, 0), (29, 0)),
             'stop_rain': ((0, 0), (0, 0)),
         })

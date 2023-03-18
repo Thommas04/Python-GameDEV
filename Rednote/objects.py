@@ -33,6 +33,7 @@ class InteractiveObject(Entity):
             self.light = LightSource(host = player, position = [x, y + 3.5], type = 'street_lamp', color = color.yellow)
             self.collision = Entity(model='quad', collider='box', position=(x, y, -0.1), scale=(1.2,1,0.1), alpha = 0, tag = 'interactive_object_collision')
 
+
             if lit == True:
                 self.object.tile_coordinate = [0,0]
             else:

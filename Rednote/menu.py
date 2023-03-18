@@ -1007,28 +1007,87 @@ class Loads():
         for objs in load_info_list:
             objs.fade_in(value=0, duration=0.15, delay=0.05)
 
+
+
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 class CheatMenu:
-    def __init__(self):
+    def __init__(self, player):
         self.open = False
+
+        self.player = player
         self.command_bg = Entity(color = color.black, alpha=0, model='quad', origin = (-0.5, 0.5),scale=(0.8, 0.35, 0), position=[-0.9, 0.4, -0.3], parent=camera.ui)
         self.commandline_bg = Entity(color = color.black, alpha=0, model='quad', origin = (-0.5, 0.5),scale=(0.8, 0.04, 0), position=[-0.9, 0.09, -0.3], parent=camera.ui)
         self.commandline_textfield = TextField(active = False, max_lines=1, text='', parent=camera.ui, font='fonts/Profontwindows-L3amg.ttf', position=[-0.88, 0.09, -0.3], scale=(0.8, 1.4, 0), character_limit=80, origin = (-0.5, 0.5))
         self.commandline_textfield.bg.visible = False
         self.commandline_textfield.character_width = Text.get_width('p', font=self.commandline_textfield.font)
 
+        commands = {'teleport':'asd'}
+
+    #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    def delayed_activation(self):
+        self.commandline_textfield.active = True
+
     def open_cheatmenu(self):
         self.open = True
         self.command_bg.alpha = 0.4
         self.commandline_bg.alpha = 0.4
-        self.commandline_textfield.active = True
-        self.commandline_textfield.alpha = 1
+        invoke(CheatMenu.delayed_activation, self, delay = 0.3)
+        self.commandline_textfield.enable()
 
     def hide_cheatmenu(self):
         self.open = False
         self.command_bg.alpha = 0
         self.commandline_bg.alpha = 0
         self.commandline_textfield.active = False
-        self.commandline_textfield.alpha = 0
+        self.commandline_textfield.disable()
+
+    #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+    def run_command(self):
+        command = self.commandline_textfield.text.split(' ')
+        try:
+            if command[0][0] == '/': # ellenőrzi, ha perrel kezdődik
+
+                if command[0] == '/time': # /time set 21:30
+                    if command[1] == 'set':
+                        self.player.gametime_hrs = int(command[2].split(':')[0])
+                        self.player.gametime_mins = int(command[2].split(':')[1])
+
+                if command[0] == "/exec":
+                    command[0] = ''
+                    executeable_command = ''
+                    for i in command:
+                        executeable_command += " " + i
+                    eval(executeable_command)
+
+                    self.player.texture = None
+
+                if command[0] == '/fly':
+                    if self.player.fly == False:
+                        self.player.right_det.collider = None
+                        self.player.left_det.collider = None
+                        self.player.up_det.collider = None
+                        self.player.down_det.collider = None
+                        self.player.fly = True
+
+                    elif self.player.fly == True:
+                        self.player.right_det.collider = 'box'
+                        self.player.left_det.collider = 'box'
+                        self.player.up_det.collider = 'box'
+                        self.player.down_det.collider = 'box'
+                        self.player.fly = False
+
+
+
+
+
+        except: pass
+
+        self.commandline_textfield.select_all()
+        self.commandline_textfield.delete_selected()
+
 
 
 
