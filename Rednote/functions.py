@@ -22,15 +22,14 @@ clk_counter = 0
 def give_back_clicked_pos():
     global clk_counter, a1
     try:
-        print(f'[{round(mouse.world_point.x, 1)},{round(mouse.world_point.y, 1)},{round(mouse.world_point.z, 1)}],')
-
-        '''if clk_counter == 0:
-            a1 = f'[({round(mouse.world_point.x, 1)},{round(mouse.world_point.y, 1)}'
+        #print(f'[({floor(mouse.world_point.x)},{floor(mouse.world_point.y + 1)}')
+        if clk_counter == 0:
+            a1 = f'[({floor(mouse.world_point.x)},{floor(mouse.world_point.y + 1)}'
             clk_counter += 1
 
         elif clk_counter == 1:
-            print(f'{a1}),({round(mouse.world_point.x,1)},{round(mouse.world_point.y,1)})],')
-            clk_counter = 0'''
+            print(f'{a1}),({round(mouse.world_point.x)},{round(mouse.world_point.y)})],')
+            clk_counter = 0
 
         Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -0.001 ), scale = 10, text = str(floor(mouse.world_point.x)) + " / " + str(floor(mouse.world_point.y)))
         Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.05, world_position = (mouse.world_point.x, mouse.world_point.y, 0 )  )
@@ -139,9 +138,9 @@ def new_info_excel():
 # -----------------------------------------------------------------------------------[]
 
 def save_info_to_excel(matrix, data_frame):
+    print('info dict: ',matrix.info_dict)
     for i in range(22): # teljes - 2
         data_frame['VALUE'][i] = matrix.info_dict[str(data_frame['TITLE'][i])]
-    print(matrix.info_dict)
 
 def load_info_from_excel(matrix, data_frame):
     for i in range(11): # teljes - 2
@@ -178,6 +177,7 @@ def fast_load_to_excel(data_frame, matrix, excel_path, sheet):
         data_frame['reserved_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['reserved']
         data_frame['type_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['type']
     data_frame.to_excel(excel_path, sheet_name = sheet, index = False)
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------

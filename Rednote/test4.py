@@ -1,38 +1,69 @@
+from ursina import *
 
-lista = []
-A = "A" ; B = "B" ; C = "C" ; D = "D"
+app = Ursina()
+water = Entity(model='cube', texture='textures/seasons/map/rustfort_summer.png')
+water_shader = Shader(fragment='''
+#version 430
 
-class Test():
-    def __init__(self, key):
-        global lista
-        self.kulcs = key
+vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+float snoise(vec2 v){
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+            -0.577350269189626, 0.024390243902439);
+    vec2 i  = floor(v + dot(v, C.yy) );
+    vec2 x0 = v -   i + dot(i, C.xx);
+    vec2 i1;
+    i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec4 x12 = x0.xyxy + C.xxzz;
+    x12.xy -= i1;
+    i = mod(i, 289.0);
+    vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+    + i.x + vec3(0.0, i1.x, 1.0 ));
+    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+        dot(x12.zw,x12.zw)), 0.0);
+    m = m*m ;
+    m = m*m ;
+    vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+    vec3 g;
+    g.x  = a0.x  * x0.x  + h.x  * x0.y;
+    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130.0 * dot(m, g);
+}
 
-        self.count_a = 0
-        self.count_b = 0
-        self.count_c = 0
-        self.count_d = 0
+in vec2 uv;
+uniform sampler2D p3d_Texture0;
+uniform float iTime;
+uniform float resolution;
+out vec4 fragColor;
+void main()
+{
+    float offset = snoise(uv*resolution+iTime*0.2)*0.01;
+    vec4 color = texture(p3d_Texture0, uv+vec2(offset));
+    float light1 = snoise(uv*resolution+iTime*0.2);
+    vec3 col = mix(vec3(0,0.2,0.7),vec3(light1)*0.4,0.5);
+    float light2 = snoise(uv*resolution-iTime*0.04);
+    col += mix(vec3(1,1,1),vec3(light2)*0.2,0.8);
+    float brightness = col.x + col.y + col.z;
+    float threshold = 0.8;
+    if (brightness > 2*threshold){
+        col = vec3(1);
+    }
+    color = mix(vec4(col,1),color,0.4);
+    // Output to screen
+    fragColor = color;
+}''')
+water.shader = water_shader
+start = time.time()
+water.set_shader_input("iTime", 0)
+water.set_shader_input("resolution", 4)
 
-        self.points = 0
+EditorCamera()
 
-        lista.append(self)
+def update():
+    water.set_shader_input("iTime", time.time() - start)
 
-Test([C,B,A,A,D,A,A,A,B,A,D,B,A,A,A,A,B,A,B,C,B,D,D,D,B,D,A,C,B,B,B,A,C,D,A,D,B,D,A,C])
-Test([A,A,B,C,B,D,B,D,D,B,A,B,D,B,C,D,B,A,A,C,D,B,D,C,A,B,D,A,A,A,A,A,A,A,B,B,A,D,C,A])
 
-Test([D,B,C,B,D,C,A,B,D,C,D,C,A,C,B,B,D,C,A,D,A,B,A,D,B,B,C,A,C,D,B,A,A,D,C,C,B,D,A,C])
-Test([C,C,B,B,D,B,D,A,B,C,D,B,A,C,C,D,B,A,D,C,A,C,C,D,C,C,C,D,D,B,A,C,B,A,D,A,A,B,B,D])
-
-Test([A,D,B,D,C,D,C,D,A,B,B,B,C,D,A,C,A,B,B,A,C,B,C,D,C,C,B,B,C,A,A,C,D,D,B,B,C,A,D,A])
-Test([B,D,B,A,A,B,B,A,A,C,A,D,C,B,D,C,D,C,B,A,B,C,B,B,C,D,A,A,B,A,D,C,C,A,D,A,D,D,B,C])
-
-Test([B,C,D,A,D,C,A,B,D,A,D,A,C,B,B,A,C,D,A,A,A,D,C,B,C,B,A,D,D,B,B,C,D,B,D,A,B,C,D,C])
-Test([C,B,A,B,B,A,A,B,C,A,C,D,D,D,A,C,A,D,C,D,D,B,A,D,C,D,C,A,A,A,B,D,B,D,C,C,B,D,D,B])
-
-solution = input("Add meg a megoldásaid: ").replace(" ", "").split(",")
-
-for i in lista:
-    for x in range(40):
-        if i.kulcs[x] == solution[x]:
-            i.points += 1
-    print(i.points)
-
+app.run()

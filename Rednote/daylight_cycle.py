@@ -44,12 +44,12 @@ class LightSource():
     def animate_color(self):
         pass
 
-
-
+# ----------------------------------------------------------------------------------------------------------------------
 
 class LightSystem():
-    def __init__(self):
-        self.amibent_light = AmbientLight(color = rgb(40,40,42))
+    def __init__(self, player):
+        self.player = player
+        self.ambient_light = AmbientLight(color = rgb(40, 40, 42))
 
     # A Value-t percekben kapjuk meg
     # 6:00 -> 360
@@ -61,17 +61,25 @@ class LightSystem():
     # FALL
     # WINTER
 
+        self.difference = {'spring' : [361, 960, 1140],
+                           'summer' : [361, 1050, 1230],
+                           'fall'   : [390, 840, 990],
+                           'winter' : [440, 780, 900]
+                          }
+
+
+    def stop_time(self):
+        self.light_animation.pause()
+    def start_time(self):
+        self.light_animation.resume()
+
     def time_set(self, value):
-        if value == 361:
-            self.amibent_light.color = rgb(100,100,100) # Hajnali sötétebb szürkés világítás
-            #self.amibent_light.animate_color(rgb(179, 207, 226), duration = 10) # Nappali fény
-            self.amibent_light.animate_color(rgb(202, 100, 100), duration=1)
+        if value == self.difference[self.player.season][0]: # kivilágosodik
+            self.light_animation = self.ambient_light.animate_color(rgb(179, 207, 226), duration = 60) # Nappali fény
 
-        '''if value == 380: # Kezd lemenni a nap
-            self.amibent_light.animate_color(rgb(137,120,93), duration = 10)
+        if value == self.difference[self.player.season][1]: # Kezd lemenni a nap
+            self.light_animation = self.ambient_light.animate_color(rgb(137, 120, 93), duration = 60)
 
-        if value == 420: # Este
-            self.amibent_light.animate_color(rgb(16, 26, 45), duration = 10)'''
+        if value == self.difference[self.player.season][2]: # Sötét este
+            self.light_animation = self.ambient_light.animate_color(rgb(16, 26, 45), duration = 60)
 
-        '''if value == 410: # Este
-            self.amibent_light.animate_color(rgb(60, 60, 45), duration = 10)'''

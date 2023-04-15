@@ -979,12 +979,12 @@ class Inventory(Entity):
 
 class BuilderModeHud():
     def __init__(self):
-        self.grid = Entity(texture = grid, model = 'quad', position = (0,0,-0.3), scale = (15, 15, 0), alpha = 0)
+        self.grid = Entity(texture = grid, model = 'quad', position = (0,0,-0.3), scale = (39.184, 22.138, 0), alpha = 0)
 
     # ------------------------------------------------------------------------------------------------------------------
 
     def open_builder_mode(self):
-        self.grid.fade_in(value = 1, duration = 0.2, delay = 0.1)
+        self.grid.fade_in(value = 0.4, duration = 0.2, delay = 0.1)
 
     def close_builder_mode(self):
         self.grid.fade_out(value = 0, duration = 0.2, delay = 0.1)
@@ -993,7 +993,7 @@ class BuilderModeHud():
     # DRAW GRIDS
 
     def update_grid(self, x, y):
-        self.grid.position = (x + 0.5, y + 0.5)
+        self.grid.position = (x + 0.23, y + 0.5)
 
 
 
