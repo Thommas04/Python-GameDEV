@@ -651,7 +651,6 @@ class HUD(Entity):
         self.power_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
         self.hunger_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
         self.thirst_core_bg_anim.fade_in(value=0.9, duration=0.4, delay=0.1)
-        print('mukukogy')
 
     def hide_hud(self, speed = 0.12):
         self.minimap.fade_in(value=0, duration=speed, delay = 0.05)
@@ -684,6 +683,10 @@ class HUD(Entity):
         self.player_stats = player_stats
 
 
+    def hide_item_under_cursor(self):
+        self.player.has_item_under_cursor = False
+        self.player.cursor_item_texture.alpha = 0
+        self.player.cursor_selected_tile.alpha = 0
 
 
 
@@ -694,10 +697,15 @@ class HUD(Entity):
 dict_x = {0.75 : 3, 0.5 : 2, 0.25 : 1, 0.0 : 0}
 dict_y = {-0.75 : 0, -0.5 : 1, -0.25 : 2, 0.0 : 3}
 
-sell_table = {'bag' : 120,
+sell_table = {'textures/misc/items/bag.png' : 120,
               'wooden_plank' : 22,
-              'arrow' : 200,
-              'potion' : 300
+              'textures/misc/items/bow_arrow.png' : 200,
+              'textures/misc/items/potion.png' : 300,
+
+              'textures/misc/items/oak_seed.png' : 25,
+              'textures/misc/items/maple_seed.png' : 50,
+              'textures/misc/items/mahagoni_seed.png' : 85,
+              'textures/misc/items/pine_seed.png' : 50
               }
 
 class Inventory(Entity):
@@ -708,17 +716,22 @@ class Inventory(Entity):
     def draggable_mouse_hover(self, x, y, mouse):
         try:
             if not mouse:
-                self.highlighted_tile.position = [self.position.x + 0.108 * dict_x[x] + 0.055, self.position.y + 0.108 * dict_y[y] - 0.38, -0.1]
+                self.highlighted_tile.position = [self.position.x + 0.11 * dict_x[x] + 0.055, self.position.y + 0.11 * dict_y[y] - 0.38, -0.1]
                 self.highlighted_tile.alpha = 1
+
             else:
-                self.highlight_click_tile.position = [self.position.x + 0.108 * dict_x[x] + 0.055, self.position.y + 0.108 * dict_y[y] - 0.38, -0.1]
+                self.highlight_click_tile.position = [self.position.x + 0.11 * dict_x[x] + 0.055, self.position.y + 0.11 * dict_y[y] - 0.38, -0.1]
                 self.highlight_click_tile.alpha = 1
                 self.highlighted_tile.alpha = 0
+
         except:
             pass
 
+    def delayed_close_inventory(self):
+        self.player.inventory_open = False
+
     # Ha kétszer megnyomod a balklikket valamelyik itemen. [ITEM HASZNÁLAT]
-    def draggable_mouse_double_click(self, tag): # TODO tag[0] = Tárgy neve ; tag[1] = kategória ; tag[2] = darabszám ; tag[3] = tradeable
+    def draggable_mouse_double_click(self, tag): # tag[0] = Tárgy neve ; tag[1] = kategória ; tag[2] = darabszám ; tag[3] = tradeable
         for child in self.children:
             if child.tag[0] == tag[0]:
 
@@ -762,7 +775,17 @@ class Inventory(Entity):
                 if child.tag[2] <= 0:
                     self.highlight_click_tile.alpha = 0
                     destroy(child)
-        print(child.tag[0])
+
+                if tag[1] == 'seeds': # TODO
+                    Inventory.hide_inventory(self)
+                    self.player.cursor_item_texture.texture = child.tag[0]
+                    self.player.has_item_under_cursor = True
+                    invoke(Inventory.delayed_close_inventory, self, delay = 1)
+                    self.hud.hide_money_text()
+
+                    self.player.cursor_item_texture.alpha = 1
+                    self.player.cursor_selected_tile.alpha = 1
+
 
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -774,7 +797,7 @@ class Inventory(Entity):
             texture_scale = (4,4),
             scale = (.43, .43),
             origin = (-.5, .5),
-            position = (-0.24,0.275),
+            position = (-0.235,0.275),
             color = color.color(0,0,.1,.9),
             alpha = 0,
             visible = False)
@@ -785,7 +808,7 @@ class Inventory(Entity):
         self.player = player
         self.hud = hud
         self.pause_menu = pause_menu
-        self.background = Entity(texture = inventory_background, alpha = 0, scale = (0.62, 1.024, -0.12), position=[self.position[0] + 0.24, 0, 0], model='quad', parent=camera.ui)
+        self.background = Entity(texture = inventory_background, alpha = 0, scale = (0.625, 0.94, -0.12), position=[self.position[0] + 0.24, 0, 0], model='quad', parent=camera.ui)
 
         # for hovered
         self.highlighted_tile = Entity(texture = inventory_hovered_tile, alpha = 0, scale = (0.116, 0.12, 0), position=[0, 0, 0], model='quad', parent=camera.ui)
@@ -831,19 +854,19 @@ class Inventory(Entity):
         for item in self.children:
             destroy(item)
 
-    def append(self, item, tagged, amount, tradeable, x = 0, y = 0): # Hozzáad egy itemet
+    def append(self, item, tagged, amount, tradeable, placeable = False, x = 0, y = 0): # Hozzáad egy itemet
         if len(self.children) >= 4*4: # Lefut, ha tele az inventory
             print('inventory full')
             return
 
         x, y = self.find_free_spot(tagged) # De előtte keresni kell egy szabad helyet.
 
-        icon = Draggable(alpha = 0, parent = self, model = 'quad', texture = item, color = color.white,
+        icon = Entity(alpha = 0, parent = self, model = 'quad', texture = item, color = color.white, collider = 'box',
             scale_x = 1 / self.texture_scale[0], scale_y = 1 / self.texture_scale[1], origin = (-.5,.5),
             x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], z = -.5, tag = [item, tagged, amount],
             on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], mouse = False),
             on_click = Func(Inventory.draggable_mouse_hover, self, x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], mouse = True),
-            on_double_click = Func(Inventory.draggable_mouse_double_click, self, tag = [item, tagged, amount, tradeable]))
+            on_double_click = Func(Inventory.draggable_mouse_double_click, self, tag = [item, tagged, amount, tradeable, placeable]))
 
 
         self.amount_background = Entity(texture = amount_bg, alpha = 0, model='quad', origin = (1,1), scale=(0.44, 0.44, 0), position = [1.2, -0.3, -0.1], parent=icon)
@@ -951,13 +974,13 @@ class Inventory(Entity):
         for bgs in self.nums_bg_list:
             bgs.fade_out(value=0, duration=0.3, delay=0.02)
 
-    def add_item(self, _item_, category, item_amount, tradeable):
+    def add_item(self, _item_, category, item_amount, tradeable, placeable):
         current_item_ids = []
         for i in self.children:
             current_item_ids.append(i.tag[0])
 
         if _item_ not in current_item_ids:
-            self.append(item = _item_, tagged = category, amount = item_amount, tradeable = tradeable)
+            self.append(item = _item_, tagged = category, amount = item_amount, tradeable = tradeable, placeable = placeable)
             print('Még nem létezett, szóval létrehoztam')
 
         else:

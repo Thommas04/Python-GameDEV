@@ -1,17 +1,6 @@
-import pandas as pd
-import pyodbc
+def linear_scaling(x, in_min, in_max, out_min, out_max):
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
-# adatbázis elérési útvonalának megadása
-db_file = r'saves/Tomikavilaga/database.accdb'
 
-# csatlakozás az adatbázishoz
-conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ='+ db_file)
-
-# adatok betöltése pandas dataframe-be
-df = pd.read_sql("SELECT * FROM tablename", conn)
-
-# megjeleníti az első 5 sor adatot
-print(df.head())
-
-# lezárja a kapcsolatot az adatbázissal
-conn.close()
+print(linear_scaling(50, 0, 200, 0.66, 0.9))
+print(linear_scaling(55, 0, 200, 0.66, 0.9))

@@ -4,7 +4,7 @@
 
 from PIL import Image
 from ursina import *
-from functions import fileread, load_info_from_excel, save_info_to_excel, new_tile_excel, new_info_excel, rawsave_excel, load_to_excel
+from functions import fileread, load_info_from_excel, save_info_to_excel, new_tile_excel, new_info_excel, rawsave_excel, load_to_excel, load_from_excel, place_objects_from_matrix
 from pandas import DataFrame, read_excel
 import os
 import datetime
@@ -167,9 +167,9 @@ def start_new_game_function(self): # THIS HAPPENS WHEN THE GAME ACTUALLY START
     #self.menu_loadscreen_theme.fade_out(value = 0, duration = 5, delay = 0) #eztiss
 
 def new_game_pressed(self): # NEW GAME PRESSED TODO
-    #Menu.show_new_game_menu(self) # rakd vissza ha befejezeted a dolgaid
+    Menu.show_new_game_menu(self) # rakd vissza ha befejezeted a dolgaid
 
-    start_new_game_function(self)
+    #start_new_game_function(self)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -270,6 +270,12 @@ def save_game_exit(self):
 
 # THIS FUNCTION RUNS THE LOADING SCREEN AND LOADS THE OBJECT FROM MATRIX
 
+def send_updated_dataframe(self):
+    self.player.matrix_dataframe = self.matrix_data_frame
+    self.player.info_dataframe = self.matrix_info_frame
+
+
+
 def create_newgame_files(self):
     # Alapértékek beállítása az info dictionary-be
     date = str(datetime.datetime.now()).split(' ')[0]
@@ -308,7 +314,7 @@ def create_newgame_files(self):
     rawsave_excel(self.matrix_info_frame, f"saves/{self.savename_text.text}/info_data.xlsx", 'infoset')  # elmenti
     rawsave_excel(self.matrix_data_frame, f"saves/{self.savename_text.text}/tile_data.xlsx", 'tileset')
 
-    self.matrix_info_frame = read_excel(f"saves/{self.savename_text.text}/info_data.xlsx", sheet_name='infoset')  # beolvas
+    self.matrix_info_frame = read_excel(f"saves/{self.savename_text.text}/info_data.xlsx", sheet_name='infoset')  # beolvas TODO
     save_info_to_excel(self.matrix, self.matrix_info_frame)
 
     # load infoframe [infoset] to excel
@@ -316,7 +322,8 @@ def create_newgame_files(self):
 
     # load dataframe [tileset] to excel
     load_to_excel(self.matrix_data_frame, self.matrix, f"saves/{self.savename_text.text}/tile_data.xlsx", 'tileset')
-    print('1.5')
+
+    send_updated_dataframe(self)
 
 def run_loading_screen(self, newgame):
 
@@ -331,7 +338,10 @@ def run_loading_screen(self, newgame):
         invoke(start_new_game_function, self, delay = 10)
 
     if not newgame:
-        pass
+        self.load_screen_cylinder.alpha = 1
+        self.load_screen_cylinder.play_animation('run_cylinder')
+
+        invoke(start_new_game_function, self, delay=10)
 
 # ---------------------------------------------------------------------------------------------------------------------- #
 
@@ -343,6 +353,7 @@ def start_newgame_click(self):
             invoke(run_loading_screen, self, True, delay=0.8)
 
             os.mkdir(f'saves/{self.savename_text.text}') # Ha nem, akkor csinál
+            self.player.selected_load_path = f'saves/{self.savename_text.text}'
 
             # ----------------------------------------------------------------------------------------------------------
             self.menu_title.animate_position([-2, 0.46, 0], curve=curve.in_quart, duration=0.12, delay=0.5)
@@ -907,7 +918,7 @@ class Menu(Entity):
         self.menu_title.appear(speed=.025, delay=0.15)
 
     #######################################################################################
-    # TODO
+
     def back(self):
         back_pressed(self)
 
@@ -922,7 +933,19 @@ def loadbar_double_click(self, menu): # start game
     menu.back_fromplay.text = ''
     menu.location = 'loading_screen'
 
-    invoke(run_loading_screen, self, False, delay = 1)
+    invoke(run_loading_screen, menu, False, delay = 1)
+
+    # beolvas a fájlból a mátrixba # TODO
+    self.matrix_info_frame = read_excel(f"saves/{self.loadbar_text.text}/info_data.xlsx", sheet_name='infoset')
+    self.matrix_data_frame = read_excel(f"saves/{self.loadbar_text.text}/tile_data.xlsx", sheet_name='tileset')
+
+    load_from_excel(self.matrix_data_frame, menu.matrix, f"saves/{self.loadbar_text.text}/tile_data.xlsx")
+    load_info_from_excel(self.matrix, self.matrix_info_frame)
+
+    menu.matrix_dataframe = self.matrix_data_frame
+    menu.info_dataframe = self.matrix_info_frame
+
+    place_objects_from_matrix(self.matrix, menu)
 
 def loadbar_hovered(self, menu):
     global menu_loadbar_pressed, title_txt, date_txt, usrname_label, ingame_date_label, wealth_label, creation_date_label, playtime_label, \
@@ -960,26 +983,30 @@ def loadbar_hovered(self, menu):
         title_txt.text = self.loadbar_text.text
         update_date = self.loadbar_text_date.text.split('-')
         print(self.loadbar_text_date.text)
-        date_txt.text = f'{update_date[1]} / {update_date[2]} / {update_date[3]}          {update_date[0]}'
+        try:
+            date_txt.text = f'{update_date[1]} / {update_date[2]} / {update_date[3]}          {update_date[0]}'
 
-        usrname_label.text = self.language_file[0].get('Player')
-        ingame_date_label.text = self.language_file[0].get('Season')
-        wealth_label.text = self.language_file[0].get('Wealth')
+            usrname_label.text = self.language_file[0].get('Player')
+            ingame_date_label.text = self.language_file[0].get('Season')
+            wealth_label.text = self.language_file[0].get('Wealth')
 
-        creation_date_label.text = self.language_file[0].get('Created')
-        playtime_label.text = self.language_file[0].get('Playtime')
-        cheats_label.text = self.language_file[0].get('Cheats')
-        mission_description_label.text = self.language_file[0].get('Mission')
+            creation_date_label.text = self.language_file[0].get('Created')
+            playtime_label.text = self.language_file[0].get('Playtime')
+            cheats_label.text = self.language_file[0].get('Cheats')
+            mission_description_label.text = self.language_file[0].get('Mission')
 
-        # ------------------------------------------------------------------
+            # ------------------------------------------------------------------
 
-        username_txt.text = self.matrix.info_dict['username']
-        ingame_date_txt.text = f'{self.language_file[0].get(self.matrix.info_dict["season"])} {self.matrix.info_dict["day"]}.'
-        wealth_txt.text = f'${int(self.matrix.info_dict["wallet"]) + int(self.matrix.info_dict["bank_balance"])}'
+            username_txt.text = self.matrix.info_dict['username']
+            ingame_date_txt.text = f'{self.language_file[0].get(self.matrix.info_dict["season"])} {self.matrix.info_dict["day"]}.'
+            wealth_txt.text = f'${int(self.matrix.info_dict["wallet"]) + int(self.matrix.info_dict["bank_balance"])}'
 
-        creation_date_txt.text = self.matrix.info_dict["creation_date"]
-        playtime_txt.text = self.matrix.info_dict["all_played_hours"]
-        cheats_txt.text = self.language_file[0].get(self.matrix.info_dict["cheats"])
+            creation_date_txt.text = self.matrix.info_dict["creation_date"]
+            playtime_txt.text = self.matrix.info_dict["all_played_hours"]
+            cheats_txt.text = self.language_file[0].get(self.matrix.info_dict["cheats"])
+
+        except:
+            print('date_error')
 
 def loadbar_leave(self):
     self.loadbar.texture = loadbar_deactive

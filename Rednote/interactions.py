@@ -51,13 +51,15 @@ class Interior(Button):
 
 class Clicks(Button):
 
-    def __init__(self, x, y, player):
+    def __init__(self, x, y, command, player):
         super().__init__(parent=scene,
             position = [x, y, entrance_layer],
             model='quad',
             alpha = 0.5,
             tag='clicker',
             on_click = Func(Clicks.run_command, self))
+
+        self.command = command
 
         self.player = player
         self.type_ = 'interior_marker'
@@ -66,14 +68,15 @@ class Clicks(Button):
         self.blacked.alpha = 0
 
     def delayed_command(self):
-        self.player.reset_time()
-        self.blacked.fade_out(value=0, duration=1.5, delay=1.5)
-        self.blacked.animate_color(color.white, duration = 2)
+        print('2')
+        if self.command == 'sleep':
+            self.player.sleep_player()
 
 
     def run_command(self):
-        self.blacked.fade_in(value = 1, duration = 1, delay = 0.2)
-        invoke(Clicks.delayed_command, self, delay = 4)
+        if self.command == 'sleep':
+            self.blacked.fade_in(value = 1, duration = 1, delay = 0.2)
+            invoke(Clicks.delayed_command, self, delay = 4)
 
 
 
@@ -81,7 +84,7 @@ class Shop():
     def __init__(self, x, y, player):
         self.player = player
         self.type_ = 'shop_marker'
-        self.tom_harwell = Entity(texture = 'textures/npcs/Tom_Harwell.png' ,alpha=1, model='quad', scale=(1.7, 3.6, 0), position=(x, y +2, -0.14), tag = 'npc')
+        self.tom_harwell = Entity(texture = 'textures/npcs/Tom_Harwell.png' ,alpha=1, model='quad', scale=(1.13, 2.4, 0), position=(x, y +4, -0.14), tag = 'npc')
 
         self.shop_marker = Entity(alpha=0, model='quad', scale=(1, 1, 0), position=(x, y, 0), tag='shop_marker')
 
