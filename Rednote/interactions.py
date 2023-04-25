@@ -1,6 +1,11 @@
 
 from ursina import *
 
+saloon_base = 'textures/buildings/interiors/saloon_baselevel.png'
+saloon_upper = 'textures/buildings/interiors/saloon_upperlevel.png'
+
+
+
 entrance_layer = -0.7
 dest_layer = -0.1
 
@@ -10,7 +15,13 @@ class Interior(Button):
     def on_leave(self):
         print('kurzorvissza')
 
-    def __init__(self, position, destination, id, player):
+    def __init__(self, position, destination, id, player, bed):
+        #placeing interior textures
+
+        self.bed = bed
+        self.saloon_interior_base = Entity(texture=saloon_base, collider = 'box', alpha=1, model='quad', scale=(59.64, 43.12, 0), position=(50, 250, 0), tag='npc')
+        self.saloon_interior_base = Entity(texture=saloon_upper, alpha=1, model='quad', scale=(59.64, 43.12, 0), position=(50, 250, -0.8), tag='npc')
+
         super().__init__(parent=scene,
             position = [position[0], position[1], entrance_layer],
             model='quad',
@@ -26,26 +37,31 @@ class Interior(Button):
         self.player = player
         self.type_ = 'interior_marker'
 
-        self.intexit  = Entity(alpha = 0.5, model='quad', scale=(1,2,0), position=(destination[0], destination[1], dest_layer), color=color.red, tag = 'interior_marker')
+        self.intexit  = Entity(alpha = 0, model='quad', scale=(1,2,0), position=(destination[0], destination[1], dest_layer), color=color.red, tag = 'interior_marker')
 
         self.player.markers_list.append(self)
 
-    def load_interior(self, entrance = False):
+    def delayed_load_interior(self, entrance = False):
         if entrance:
-            print(distance(self.player.position, self.position))
-            if distance(self.player.position, self.position) < 1:
-                print(self.destination)
+            if distance(self.player.position, self.position) < 2:
                 self.player.interior_exit_enable_byte = False
+
                 for parts in self.player.player_parts:
                     parts.x += self.destination[0] - self.pos[0]
-                    parts.y += self.destination[1] - self.pos[1]
-
+                    parts.y += self.destination[1] - self.pos[1] + 1.5
 
         else:
             for parts in self.player.player_parts:
                 parts.x += self.pos[0] - self.destination[0]
-                parts.y += self.pos[1] - self.destination[1]
+                parts.y += self.pos[1] - self.destination[1] - 1
             return self.pos
+
+    def load_interior(self, entrance = False):
+        way = entrance
+        self.bed.blacked.fade_in(value=1, duration=0.7, delay=0.1)
+        self.bed.blacked.fade_out(value=0, duration=1, delay=1.6)
+        invoke(Interior.delayed_load_interior, self, way, delay = 1.5)
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -84,7 +100,7 @@ class Shop():
     def __init__(self, x, y, player):
         self.player = player
         self.type_ = 'shop_marker'
-        self.tom_harwell = Entity(texture = 'textures/npcs/Tom_Harwell.png' ,alpha=1, model='quad', scale=(1.13, 2.4, 0), position=(x, y +4, -0.14), tag = 'npc')
+        self.tom_harwell = Entity(texture = 'textures/npcs/Tom_Harwell.png' ,alpha=1, model='quad', scale=(1.35, 2.88, 0), position=(x, y +3.4, -0.14), tag = 'npc')
 
         self.shop_marker = Entity(alpha=0, model='quad', scale=(1, 1, 0), position=(x, y, 0), tag='shop_marker')
 

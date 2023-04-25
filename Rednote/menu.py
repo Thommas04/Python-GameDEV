@@ -164,7 +164,7 @@ def start_new_game_function(self): # THIS HAPPENS WHEN THE GAME ACTUALLY START
     self.load_screen_cylinder.alpha = 0
 
     self.menu_theme.stop(destroy=True)
-    #self.menu_loadscreen_theme.fade_out(value = 0, duration = 5, delay = 0) #eztiss
+    self.menu_loadscreen_theme.fade_out(value = 0, duration = 5, delay = 0, curve=curve.in_expo) #eztiss
 
 def new_game_pressed(self): # NEW GAME PRESSED TODO
     Menu.show_new_game_menu(self) # rakd vissza ha befejezeted a dolgaid
@@ -569,7 +569,7 @@ class Menu(Entity):
     # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     def start_sound(self):
-        self.menu_theme = Audio('sounds/menu/menu_theme.ogg', loop=True, autoplay=True, balance = 0.5)
+        self.menu_theme = Audio(f'sounds/menu/menu_theme{str(random.randint(0,3))}.ogg', loop=True, autoplay=True, balance = 0.5)
 
     def show_menu(self): # megjeleníti az alap menüt
         global status
@@ -936,16 +936,17 @@ def loadbar_double_click(self, menu): # start game
     invoke(run_loading_screen, menu, False, delay = 1)
 
     # beolvas a fájlból a mátrixba # TODO
-    self.matrix_info_frame = read_excel(f"saves/{self.loadbar_text.text}/info_data.xlsx", sheet_name='infoset')
-    self.matrix_data_frame = read_excel(f"saves/{self.loadbar_text.text}/tile_data.xlsx", sheet_name='tileset')
+    menu.matrix_info_frame = read_excel(f"saves/{self.loadbar_text.text}/info_data.xlsx", sheet_name='infoset')
+    menu.matrix_data_frame = read_excel(f"saves/{self.loadbar_text.text}/tile_data.xlsx", sheet_name='tileset')
 
-    load_from_excel(self.matrix_data_frame, menu.matrix, f"saves/{self.loadbar_text.text}/tile_data.xlsx")
-    load_info_from_excel(self.matrix, self.matrix_info_frame)
+    load_from_excel(menu.matrix_data_frame, menu.matrix, f"saves/{self.loadbar_text.text}/tile_data.xlsx")
+    load_info_from_excel(menu.matrix, menu.matrix_info_frame)
 
-    menu.matrix_dataframe = self.matrix_data_frame
-    menu.info_dataframe = self.matrix_info_frame
+    print('pedig ez lefutott')
+    send_updated_dataframe(menu)
 
-    place_objects_from_matrix(self.matrix, menu)
+    place_objects_from_matrix(menu.matrix, menu)
+
 
 def loadbar_hovered(self, menu):
     global menu_loadbar_pressed, title_txt, date_txt, usrname_label, ingame_date_label, wealth_label, creation_date_label, playtime_label, \
@@ -1052,10 +1053,12 @@ class Loads():
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 class CheatMenu:
-    def __init__(self, player):
+    def __init__(self, player, weather, world_canvas):
         self.open = False
+        self.world_canvas = world_canvas
 
         self.player = player
+        self.weather = weather
         self.command_bg = Entity(color = color.black, alpha=0, model='quad', origin = (-0.5, 0.5),scale=(0.8, 0.35, 0), position=[-0.9, 0.4, -0.3], parent=camera.ui)
         self.commandline_bg = Entity(color = color.black, alpha=0, model='quad', origin = (-0.5, 0.5),scale=(0.8, 0.04, 0), position=[-0.9, 0.09, -0.3], parent=camera.ui)
         self.commandline_textfield = TextField(active = False, max_lines=1, text='', parent=camera.ui, font='fonts/Profontwindows-L3amg.ttf', position=[-0.88, 0.09, -0.3], scale=(0.8, 1.4, 0), character_limit=80, origin = (-0.5, 0.5))
@@ -1118,6 +1121,37 @@ class CheatMenu:
                         self.player.up_det.collider = 'box'
                         self.player.down_det.collider = 'box'
                         self.player.fly = False
+
+                if command[0] == '/weather':
+                    if command[1] == 'rain':
+                        self.weather.start_weather()
+                        self.player.rain = True
+                    if command[1] == 'clear':
+                        self.weather.stop_weather()
+                        self.player.rain = False
+
+                if command[0] == '/season':
+                    if command[1] == 'spring' or command[1] == 'summer' or command[1] == 'fall' or command[1] == 'winter':
+                        self.world_canvas.texture = 'textures/seasons/map/' + f'rustfort_{command[1]}.png'
+
+                        self.player.season = command[1]
+                        for tree in self.player.trees_list:
+                            tree.upgrade_tree(stage = tree.stage)
+
+                        if self.player.rain == True:
+                            self.weather.start_weather()
+
+                if command[0] == '/kill':
+                    self.player.player_stats['health_core'] = 0
+                    self.player.player_stats['health'] = 0
+
+                if command[0] == '/tp':
+                    x = command[0].split(',')[0]
+                    y = command[0].split(',')[1]
+
+                    for parts in self.player.player_parts:
+                        parts.position = [x, y]
+
 
 
 

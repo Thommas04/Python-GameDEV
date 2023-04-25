@@ -8,6 +8,7 @@ saplings_spritesheet = 'textures/seasons/trees/saplings_sheet.png'
 static_trees_spritesheet = 'textures/seasons/trees/static_trees_sheet.png'
 
 rain_spritesheet = 'textures/seasons/weather/rain/rain.png'
+snow_spritesheet = 'textures/seasons/weather/rain/snow.png'
 
 def map_range(x, in_min, in_max, out_min, out_max):
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
@@ -39,6 +40,7 @@ class Trees():
     def __init__(self, player, type, position, matrix, stage = 5, cut = True, by_player = False):
         self.matrix = matrix
         self.player = player
+        self.type_ = type
         self.type = types[type]
         self.cut = cut
         self.pos = [position[0] - 0.2, position[1], position[2]]
@@ -132,6 +134,7 @@ class Trees():
             self.tree_stump.tile_coordinate = [self.type[0] + seasons[self.player.season][1], self.type[1]]
 
             self.tree_crown.visible = True
+            self.tree_crown.tile_coordinate = [self.type[0] + seasons[self.player.season][1], self.type[1]]
             self.tree_collision.enable()
             self.cut_spot.scale = (1.5, 5)
 
@@ -140,24 +143,58 @@ class Trees():
 # ----------------------------------------------------------------------------------------------------------------------
 
 class Weather():
-    def __init__(self):
-        self.rain_screen_left = SpriteSheetAnimation(rain_spritesheet, position=[-0.5, 0, 0.3], color = color.white, alpha = 0, parent = camera.ui, tileset_size=(30, 1), scale = (1,1) ,fps=30, animations={
+    def __init__(self, player):
+        self.player = player
+        self.rain_screen_left = SpriteSheetAnimation(texture = rain_spritesheet, position=[-0.5, 0, 0.3], color = color.white, alpha = 0, parent = camera.ui, tileset_size=(30, 1), scale = (1,1) ,fps=30, animations={
             'rain': ((0, 0), (29, 0)),
             'stop_rain': ((0, 0), (0, 0)),
+            'start_snow': ((0, 0), (97, 0)),
+            'stop_snow': ((0, 0), (0, 0)),
         })
 
-        self.rain_screen_right = SpriteSheetAnimation(rain_spritesheet, position=[0.5, 0, 0.3], color = color.white, alpha=0, parent=camera.ui, tileset_size=(30, 1), scale=(1, 1), fps=30, animations={
+        self.rain_screen_right = SpriteSheetAnimation(texture = rain_spritesheet, position=[0.5, 0, 0.3], color = color.white, alpha=0, parent=camera.ui, tileset_size=(30, 1), scale=(1, 1), fps=30, animations={
             'rain': ((0, 0), (29, 0)),
             'stop_rain': ((0, 0), (0, 0)),
+            'start_snow': ((0, 0), (97, 0)),
+            'stop_snow': ((0, 0), (0, 0)),
         })
 
-        self.rain_screen_left.play_animation('rain')
-        self.rain_screen_right.play_animation('rain')
 
-        #self.menu_theme = Audio('sounds/environment/environment_rain.ogg', loop=True, autoplay=True, balance=0.5, volume = 0.1)
+    def start_weather(self):
+        if self.player.season != 'winter':
+            self.rain_screen_right.fps = 30
 
-    def start_weather(self, type, ):
-        pass
+            self.rain_screen_right.texture = rain_spritesheet
+            self.rain_screen_left.texture = rain_spritesheet
+
+            self.rain_screen_left.play_animation('rain')
+            self.rain_screen_right.play_animation('rain')
+            self.rain_screen_right.alpha = 0.3
+            self.rain_screen_left.alpha = 0.3
+
+            self.menu_theme = Audio('sounds/environment/environment_rain.ogg', loop=True, autoplay=True, balance=0.5, volume = 0.1)
+
+        else:
+            self.rain_screen_right.fps = 10
+
+            self.rain_screen_right.texture = snow_spritesheet
+            self.rain_screen_left.texture = snow_spritesheet
+
+            self.rain_screen_left.play_animation('start_snow')
+            self.rain_screen_right.play_animation('start_snow')
+            self.rain_screen_right.alpha = 0.5
+            self.rain_screen_left.alpha = 0.5
+
+            self.menu_theme.fade_out(value=0, duration=.2, delay=0, curve=curve.in_expo, resolution=None,interrupt='finish', )
+
+    def stop_weather(self):
+        self.rain_screen_left.play_animation('stop_rain')
+        self.rain_screen_right.play_animation('stop_rain')
+        self.rain_screen_right.alpha = 0
+        self.rain_screen_left.alpha = 0
+
+        self.menu_theme.fade_out(value=0, duration=.5, delay=0, curve=curve.in_expo, resolution=None, interrupt='finish', )
+
 
 
 

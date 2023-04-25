@@ -30,7 +30,7 @@ dead_screen_spritesheet = 'hud/death_screen/death_screen_sheet.png'
 # HUD # ------------------------------------------------------------*
 
 minimap = 'hud/hud_widgets/minimap/minimap_frame.png'
-minimap_background = 'hud/hud_widgets/minimap/minimap_bg.png'
+minimap_background = 'hud/hud_widgets/minimap/minimap_bg.jpg'
 
 core_frame_spritesheet = 'hud/hud_widgets/cores/core_frame_sheet.png'
 core_spritesheet = 'hud/hud_widgets/cores/core_sheet.png'
@@ -172,12 +172,12 @@ class WeaponWheel(Entity):
 
         self.right_icon = Entity(tag = 'hand', texture = hand_icon, model = 'quad', position = (0.275, -0.022, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
         self.left_icon = Entity(tag = '', texture = axe_icon, model = 'quad', position = (-0.26, -0.03, -0.1), scale = (0.12, 0.12, 0), rotation = (0,0,-69), alpha = 0, parent=camera.ui)
-        self.lower_left_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (-0.17, -0.22, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
+        self.lower_left_icon = Entity(tag = 'lantern', texture = lantern_icon, model = 'quad', position = (-0.17, -0.22, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
         self.lower_right_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.2, -0.21, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
         self.down_icon = Entity(tag = '', texture = hand_icon, model = 'quad', position = (0.02, -0.295, -0.1), scale = (0.14, 0.14, 0), alpha = 0, parent=camera.ui)
 
 
-        self.wheel_icons_list = [self.right_icon, self.upper_left_icon, self.left_icon]#, self.up_iconself.upper_right_icon, self.lower_left_icon, self.lower_right_icon, self.down_icon]
+        self.wheel_icons_list = [self.right_icon, self.upper_left_icon, self.left_icon, self.lower_left_icon]#, self.up_iconself.upper_right_icon, self.lower_right_icon, self.down_icon]
 
     def get_back_selected_wheeltile(self):
         return self.selected_tile
@@ -465,12 +465,31 @@ class HUD(Entity):
             self.player.player_stats['bank_balance'] -= 320
             HUD.show_money_text(self, self.player.player_stats['bank_balance'], self.player.player_stats['wallet_balance'])
 
-    def shop_hover(self):
+    def shop_hover(self,):
         self.shop_bars.tile_coordinate = [0,0]
 
     def shop_leave(self):
         self.shop_bars.tile_coordinate = [0,1]
 
+
+    def create_shop_bar(self, row, title, price):
+        difference = row * 0.25
+        self.shop_bars = Entity(texture=bars_sheet, model='quad', position=(-0.55, 0.25 + difference, -0.06), scale=(0.48, 0.09, 0), alpha=0, parent=camera.ui, tileset_size=[1, 3], tile_coordinate=[0, 1])
+        self.shop_selector = Entity(texture=bars_sheet, model='quad', position=(-0.55, 0.25 + difference, -0.07), scale=(0.48, 0.09, 0), alpha=0, parent=camera.ui, tileset_size=[1, 3], tile_coordinate=[0, 2])
+
+        self.shop_first_clickable = Entity(model='quad', position=(-0.54, 0.25, -0.08), scale=(0.48, 0.07, 0), alpha=0,
+                                           collider='box', parent=camera.ui, on_click=Func(HUD.shop_click, self, title),
+                                           on_mouse_enter=Func(HUD.shop_hover, self, self.shop_bars),
+                                           on_mouse_exit=Func(HUD.shop_leave, self, self.shop_bars))
+        self.shop_first_clickable.disable()
+
+        self.shop_text = Text(text='Torony', position=(-0.75, 0.26, -0.09), color=rgb(172, 174, 190), parent=camera.ui,
+                              font='fonts/CHINESER.TTF', scale=1.1)
+        self.price_text = Text(text='$320', position=(-0.45, 0.26, -0.09), origin=(-0.5, 0.5), color=rgb(172, 174, 190),
+                               parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.1)
+
+        self.shop_text.alpha = 0
+        self.price_text.alpha = 0
 
     #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -478,7 +497,29 @@ class HUD(Entity):
         self.language_file = language_file
         self.player = player
         self.minimap = Entity(texture = minimap, model = 'quad', position = (-0.68, -0.32, -0.05), scale = (0.4, 0.4, 0), alpha = 0, parent = camera.ui)
-        self.minimap_bg = Entity(texture = minimap_background, model = 'circle', position = (-0.685, -0.326, -0.04), scale = (0.24, 0.24), alpha = 0, parent = camera.ui, texture_scale = (4,4))
+
+        num_sides = 50
+
+        verts = []
+        for i in range(num_sides):
+            angle = 2 * math.pi * i / num_sides
+            x = 0.5 * math.cos(angle)
+            y = 0.5 * math.sin(angle)
+            verts.append((x, y, 0))
+
+        tris = []
+        for i in range(1, num_sides - 1):
+            tris.append((0, i, i + 1))
+
+        uvs = []
+        for i in range(num_sides):
+            angle = 2 * math.pi * i / num_sides
+            u = (math.cos(angle) + 1) / 2
+            v = (math.sin(angle) + 1) / 2
+            uvs.append((u, v))
+
+        self.minimap_bg = Entity(alpha = 0, texture_scale=(0.2, 0.2, 0), texture=minimap_background,model=Mesh(vertices=verts, triangles=tris, uvs=uvs), position=(-0.684, -0.327, -0.04),scale=(0.24, 0.24), parent=camera.ui)
+
 
         self.dead_screen_status = 'none'
 
@@ -632,7 +673,7 @@ class HUD(Entity):
 
     def show_hud(self):
         self.minimap.fade_in(value=1, duration=0.4, delay = 0.1)
-        self.minimap_bg.fade_in(value=0.9, duration=0.4, delay = 0.1)
+        self.minimap_bg.fade_in(value=0.6, duration=0.4, delay = 0.1)
 
         self.health_core.fade_in(value=1, duration=0.3, delay=0.02)
         self.energy_core.fade_in(value=1, duration=0.3, delay=0.02)
@@ -697,32 +738,52 @@ class HUD(Entity):
 dict_x = {0.75 : 3, 0.5 : 2, 0.25 : 1, 0.0 : 0}
 dict_y = {-0.75 : 0, -0.5 : 1, -0.25 : 2, 0.0 : 3}
 
-sell_table = {'textures/misc/items/bag.png' : 120,
-              'wooden_plank' : 22,
-              'textures/misc/items/bow_arrow.png' : 200,
-              'textures/misc/items/potion.png' : 300,
+sell_table = {'textures/misc/items/bag.png' : [120, 'Batyu'],
+              'textures/misc/items/bow_arrow.png' : [200, 'Nyíl'],
+              'textures/misc/items/charger_potion.png' : [300, 'Csodabogár elixír'],
 
-              'textures/misc/items/oak_seed.png' : 25,
-              'textures/misc/items/maple_seed.png' : 50,
-              'textures/misc/items/mahagoni_seed.png' : 85,
-              'textures/misc/items/pine_seed.png' : 50
+              'textures/misc/items/oak_seed.png' : [25, 'Tölgy mag'],
+              'textures/misc/items/maple_seed.png' : [50, 'Juhar mag'],
+              'textures/misc/items/mahagoni_seed.png' : [85, 'Mahagoni mag'],
+              'textures/misc/items/pine_seed.png' : [50, 'Fenyő mag'],
+
+              'textures/misc/items/bread.png' : [30, 'Kenyér'],
+              'textures/misc/items/dead_eye_potion.png' :[250, 'Erő bájital'],
+              'textures/misc/items/energy_potion.png' : [200, 'Energia bájital'],
+              'textures/misc/items/health_potion.png' : [285, 'Életerő bájital'],
+              'textures/misc/items/gem.png' : [450, 'Gyémánt'],
+              'textures/misc/items/orb.png' : [250, 'Gyöngy'],
+              'textures/misc/items/radish.png' : [30, 'Retek'],
+              'textures/misc/items/sausage.png' : [50, 'Kolbász'],
+              'textures/misc/items/steak.png' : [50, 'Disznóhús'],
+              'textures/misc/items/sword.png' : [420, 'Kard'],
+              'textures/misc/items/tower.png' : [300, 'Torony'],
+              'textures/misc/items/whisky.png' : [45, 'Whisky'],
+              'textures/misc/items/wood.png' : [20, 'Fa']
               }
+
+
 
 class Inventory(Entity):
     def mouse_hover_invslot(self, position):
         self.highlighted_tile.position = [position[0] + 0.005, position[1], position[2]]
         self.highlighted_tile.alpha = 1
 
-    def draggable_mouse_hover(self, x, y, mouse):
+    def draggable_mouse_hover(self, x, y, mouse, tag):
         try:
-            if not mouse:
+            if not mouse: # ha ráhúzta az egeret az ikonra
                 self.highlighted_tile.position = [self.position.x + 0.11 * dict_x[x] + 0.055, self.position.y + 0.11 * dict_y[y] - 0.38, -0.1]
                 self.highlighted_tile.alpha = 1
 
-            else:
+            else: # ha rákattintott az egérrel az ikonra
                 self.highlight_click_tile.position = [self.position.x + 0.11 * dict_x[x] + 0.055, self.position.y + 0.11 * dict_y[y] - 0.38, -0.1]
                 self.highlight_click_tile.alpha = 1
                 self.highlighted_tile.alpha = 0
+
+                if self.mode == 'basic':
+                    self.item_title.text = sell_table[tag[0]][1]
+                if self.mode == 'sell':
+                    self.item_title.text = f'${sell_table[tag[0]][0]}'
 
         except:
             pass
@@ -731,35 +792,77 @@ class Inventory(Entity):
         self.player.inventory_open = False
 
     # Ha kétszer megnyomod a balklikket valamelyik itemen. [ITEM HASZNÁLAT]
-    def draggable_mouse_double_click(self, tag): # tag[0] = Tárgy neve ; tag[1] = kategória ; tag[2] = darabszám ; tag[3] = tradeable
+    def draggable_mouse_double_click(self, tag): # tag[0] = Tárgy neve ; tag[1][0] = kategória ; tag[1][1] = sec_type ; tag[2] = darabszám ; tag[3] = tradeable
         for child in self.children:
             if child.tag[0] == tag[0]:
 
-                if tag[1] in ('food', 'healthcare'):
+                if tag[1][0] in ('food', 'tonic'):
                     if self.mode == 'basic':
                         child.tag[2] -= 1
 
-                        if tag[0] == 'arrow':
+                        if tag[0] == 'textures/misc/items/sausage.png' or \
+                                tag[0] == 'textures/misc/items/steak.png' or \
+                                tag[0] == 'textures/misc/items/radish.png' or \
+                                tag[0] == 'textures/misc/items/bread.png':
                             if self.player.player_stats['hunger_core'] < 50:
                                 self.player.player_stats['hunger_core'] += 15
                             if self.player.player_stats['hunger_core'] == 50:
                                 self.player.player_stats['hunger'] += 15
+
+                        if tag[0] == 'textures/misc/items/whisky.png':
                             if self.player.player_stats['thirst_core'] < 50:
                                 self.player.player_stats['thirst_core'] += 15
                             if self.player.player_stats['thirst_core'] == 50:
                                 self.player.player_stats['thirst'] += 15
-                        if tag[0] == 'potion':
+
+                        if tag[0] == 'textures/misc/items/health_potion.png':
                             if self.player.player_stats['health_core'] < 50:
                                 self.player.player_stats['health_core'] += 15
                             if self.player.player_stats['health_core'] == 50:
                                 self.player.player_stats['health'] += 15
 
-                    if self.mode == 'sell':
-                        if tag[3] == True: #tradeable == True
-                            child.tag[2] -= 1
-                            self.player.player_stats['bank_balance'] += sell_table[tag[0]]
-                            self.hud.show_money_text(self.player.player_stats['bank_balance'], self.player.player_stats['wallet_balance'])
+                        if tag[0] == 'textures/misc/items/energy_potion.png':
+                            if self.player.player_stats['energy_core'] < 50:
+                                self.player.player_stats['energy_core'] += 15
+                            if self.player.player_stats['energy_core'] == 50:
+                                self.player.player_stats['energy'] += 15
 
+                        if tag[0] == 'textures/misc/items/dead_eye_potion.png':
+                            if self.player.player_stats['power_core'] < 50:
+                                self.player.player_stats['power_core'] += 15
+                            if self.player.player_stats['power_core'] == 50:
+                                self.player.player_stats['power'] += 15
+
+                        if tag[0] == 'textures/misc/items/charger_potion.png':
+                            if self.player.player_stats['power_core'] < 50:
+                                self.player.player_stats['power_core'] += 15
+                            if self.player.player_stats['power_core'] == 50:
+                                self.player.player_stats['power'] += 25
+                            if self.player.player_stats['energy_core'] < 50:
+                                self.player.player_stats['energy_core'] += 15
+                            if self.player.player_stats['energy_core'] == 50:
+                                self.player.player_stats['energy'] += 25
+                            if self.player.player_stats['health_core'] < 50:
+                                self.player.player_stats['health_core'] += 15
+                            if self.player.player_stats['health_core'] == 50:
+                                self.player.player_stats['health'] += 25
+                            if self.player.player_stats['thirst_core'] < 50:
+                                self.player.player_stats['thirst_core'] += 15
+                            if self.player.player_stats['thirst_core'] == 50:
+                                self.player.player_stats['thirst'] += 25
+                            if self.player.player_stats['hunger_core'] < 50:
+                                self.player.player_stats['hunger_core'] += 15
+                            if self.player.player_stats['hunger_core'] == 50:
+                                self.player.player_stats['hunger'] += 25
+
+                if self.mode == 'sell':
+                    print(tag[3], tag[0])
+                    if tag[3] == True: #tradeable == True
+                        child.tag[2] -= 1
+                        self.player.player_stats['bank_balance'] += sell_table[tag[0]][0]
+                        self.hud.show_money_text(self.player.player_stats['bank_balance'], self.player.player_stats['wallet_balance'])
+
+                # ------------------------------------------------------------------------------------------------------
 
                 # child.children[0] -> entity bg, [1] -> text
                 child.children[1].text = child.tag[2]
@@ -776,20 +879,43 @@ class Inventory(Entity):
                     self.highlight_click_tile.alpha = 0
                     destroy(child)
 
-                if tag[1] == 'seeds': # TODO
-                    Inventory.hide_inventory(self)
-                    self.player.cursor_item_texture.texture = child.tag[0]
-                    self.player.has_item_under_cursor = True
-                    invoke(Inventory.delayed_close_inventory, self, delay = 1)
-                    self.hud.hide_money_text()
+                # ------------------------------------------------------------------------------------------------------
 
-                    self.player.cursor_item_texture.alpha = 1
-                    self.player.cursor_selected_tile.alpha = 1
+                if self.mode == 'basic':
+                    if tag[1][1] == 'seeds' or tag[1][1] == 'tower': # TODO
+                        Inventory.hide_inventory(self)
+                        self.player.cursor_item_texture.texture = child.tag[0]
+                        self.player.has_item_under_cursor = True
+                        invoke(Inventory.delayed_close_inventory, self, delay = 1)
+                        self.hud.hide_money_text()
+
+                        self.player.cursor_item_texture.alpha = 1
+                        self.player.cursor_selected_tile.alpha = 1
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+    def button_enter(self, button):
+        button.tile_coordinate = [button.tile_coordinate[0], 0]
+
+    def button_exit(self, button):
+        button.tile_coordinate = [button.tile_coordinate[0], 1]
+
+    def inv_button_click(self, button): # food, tonic, card, builds, valuables, crafts
+        self.page = button
+
+        for child in self.children:
+            if child.tag[1][0] != self.page:
+                child.visible = False
+                child.collider = None
+            else:
+                child.visible = True
+                child.collider = 'box'
+
 
 
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, pause_menu, player, hud, **kwargs):
+    def __init__(self, pause_menu, player, hud, **kwargs): #TODO
         super().__init__(
             parent = camera.ui,
             model = 'quad',
@@ -808,12 +934,39 @@ class Inventory(Entity):
         self.player = player
         self.hud = hud
         self.pause_menu = pause_menu
-        self.background = Entity(texture = inventory_background, alpha = 0, scale = (0.625, 0.94, -0.12), position=[self.position[0] + 0.24, 0, 0], model='quad', parent=camera.ui)
+        self.background = Entity(texture = inventory_background, alpha = 0, scale = (0.625, 0.94, -0.14), position=[self.position[0] + 0.24, 0, -0.1], model='quad', parent=camera.ui)
+        self.page = 'food'
 
         # for hovered
-        self.highlighted_tile = Entity(texture = inventory_hovered_tile, alpha = 0, scale = (0.116, 0.12, 0), position=[0, 0, 0], model='quad', parent=camera.ui)
+        self.highlighted_tile = Entity(texture = inventory_hovered_tile, alpha = 0, scale = (0.116, 0.12, 0), position=[0, 0, -0.2], model='quad', parent=camera.ui)
         # for clicked
-        self.highlight_click_tile = Entity(texture = inventory_selected_tile, alpha = 0, scale = (0.116, 0.12, 0), position=[0, 0, 0], model='quad', parent=camera.ui)
+        self.highlight_click_tile = Entity(texture = inventory_selected_tile, alpha = 0, scale = (0.116, 0.12, 0), position=[0, 0, -0.2], model='quad', parent=camera.ui)
+
+        ## INV TEXT
+        self.inventory_label_txt = Text(text="Inventory", position=[-0.065, 0.4, -0.11], color=rgb(180, 180, 180), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.15, 0.85], alpha = 0)
+
+        self.inv_button_food = Entity(position=[-0.12, 0.32, -0.4], texture=inventory_buttons_spritesheet, tileset_size = [6,2], tile_coordinate = [0, 1], alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui)
+        self.inv_button_tonic = Entity(position=[-0.075, 0.32, -0.4], texture=inventory_buttons_spritesheet, tileset_size = [6,2], tile_coordinate = [1, 1], alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui)
+        self.inv_button_card = Entity(position=[-0.03, 0.32, -0.4], texture=inventory_buttons_spritesheet, tileset_size = [6,2], tile_coordinate = [2, 1], alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui)
+        self.inv_button_builds = Entity(position=[0.015, 0.32, -0.4], texture=inventory_buttons_spritesheet, tileset_size = [6,2], tile_coordinate = [3, 1], alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui)
+        self.inv_button_vals = Entity(position=[0.06, 0.32, -0.4], texture=inventory_buttons_spritesheet, tileset_size = [6,2], tile_coordinate = [4, 1], alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui)
+        self.inv_button_craft = Entity(position=[0.105, 0.32, -0.4], texture=inventory_buttons_spritesheet, tileset_size = [6,2], tile_coordinate = [5, 1], alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui)
+
+        self.inv_button_food_click =  Entity(position=[-0.12, 0.32, -0.45], collider = 'box', alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui, on_mouse_enter=Func(Inventory.button_enter, self, self.inv_button_food), on_mouse_exit = Func(Inventory.button_exit, self, self.inv_button_food), on_click = Func(Inventory.inv_button_click, self, 'food')  )
+        self.inv_button_tonic_click = Entity(position=[-0.075, 0.32, -0.45], collider = 'box', alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui, on_mouse_enter=Func(Inventory.button_enter, self, self.inv_button_tonic), on_mouse_exit = Func(Inventory.button_exit, self, self.inv_button_tonic), on_click = Func(Inventory.inv_button_click, self, 'tonic') )
+        self.inv_button_card_click =  Entity(position=[-0.03, 0.32, -0.45], collider = 'box', alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui, on_mouse_enter=Func(Inventory.button_enter, self, self.inv_button_card), on_mouse_exit = Func(Inventory.button_exit, self, self.inv_button_card), on_click = Func(Inventory.inv_button_click, self, 'card')  )
+        self.inv_button_builds_click =Entity(position=[0.015, 0.32, -0.45], collider = 'box', alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui, on_mouse_enter=Func(Inventory.button_enter, self, self.inv_button_builds), on_mouse_exit = Func(Inventory.button_exit, self, self.inv_button_builds), on_click = Func(Inventory.inv_button_click, self, 'builds') )
+        self.inv_button_vals_click =  Entity(position=[0.06, 0.32, -0.45], collider = 'box', alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui, on_mouse_enter=Func(Inventory.button_enter, self, self.inv_button_vals), on_mouse_exit = Func(Inventory.button_exit, self, self.inv_button_vals), on_click = Func(Inventory.inv_button_click, self, 'valuables')  )
+        self.inv_button_craft_click = Entity(position=[0.105, 0.32, -0.45], collider = 'box', alpha=0, scale=(0.032, 0.032, 0), model='quad', parent=camera.ui, on_mouse_enter=Func(Inventory.button_enter, self, self.inv_button_craft), on_mouse_exit = Func(Inventory.button_exit, self, self.inv_button_craft), on_click = Func(Inventory.inv_button_click, self, 'crafts') )
+
+        self.item_title = Text(text="", origin = (0,0), position=[0, -0.2, -0.11], color=rgb(180, 180, 180), parent=camera.ui, font='fonts/CHINESER.TTF', scale=[1.265, 0.935])
+
+        self.inv_button_list = [self.inv_button_food_click,self.inv_button_tonic_click,self.inv_button_card_click, self.inv_button_builds_click, self.inv_button_vals_click,self.inv_button_craft_click]
+
+        for i in self.inv_button_list:
+            i.disable()
+
+
 
         inv_x = [0,1,2,3]
         inv_y = [0,1,2,3]
@@ -840,7 +993,7 @@ class Inventory(Entity):
 
                 self.new_children_list = []
                 for i in self.children:
-                    if i.tag[1] == tagged:
+                    if i.tag[1][0] == tagged:
                         self.new_children_list.append(i)
 
                 self.grid_positions = [(int(e.x*self.texture_scale[0]), int(e.y*self.texture_scale[1])) for e in self.new_children_list]
@@ -854,8 +1007,8 @@ class Inventory(Entity):
         for item in self.children:
             destroy(item)
 
-    def append(self, item, tagged, amount, tradeable, placeable = False, x = 0, y = 0): # Hozzáad egy itemet
-        if len(self.children) >= 4*4: # Lefut, ha tele az inventory
+    def append(self, item, tagged, amount, tradeable, sec_type, placeable = False, x = 0, y = 0): # Hozzáad egy itemet
+        if len(self.children) >= 4*16: # Lefut, ha tele az inventory
             print('inventory full')
             return
 
@@ -863,10 +1016,10 @@ class Inventory(Entity):
 
         icon = Entity(alpha = 0, parent = self, model = 'quad', texture = item, color = color.white, collider = 'box',
             scale_x = 1 / self.texture_scale[0], scale_y = 1 / self.texture_scale[1], origin = (-.5,.5),
-            x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], z = -.5, tag = [item, tagged, amount],
-            on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], mouse = False),
-            on_click = Func(Inventory.draggable_mouse_hover, self, x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], mouse = True),
-            on_double_click = Func(Inventory.draggable_mouse_double_click, self, tag = [item, tagged, amount, tradeable, placeable]))
+            x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], z = -.5, tag = [item, [tagged, sec_type], amount],
+            on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], mouse = False, tag = None),
+            on_click = Func(Inventory.draggable_mouse_hover, self, x = x * 1 / self.texture_scale[0], y = -y * 1 / self.texture_scale[1], mouse = True, tag = [item, [tagged, sec_type], amount, tradeable, placeable]),
+            on_double_click = Func(Inventory.draggable_mouse_double_click, self, tag = [item, [tagged, sec_type], amount, tradeable, placeable]))
 
 
         self.amount_background = Entity(texture = amount_bg, alpha = 0, model='quad', origin = (1,1), scale=(0.44, 0.44, 0), position = [1.2, -0.3, -0.1], parent=icon)
@@ -902,8 +1055,8 @@ class Inventory(Entity):
             icon.children[0].z = -0.105
             icon.children[1].z = -0.108
 
-            icon.on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x = icon.x, y = icon.y, mouse = False)
-            icon.on_click = Func(Inventory.draggable_mouse_hover, self, x = icon.x, y = icon.y, mouse = True)
+            icon.on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x = icon.x, y = icon.y, mouse = False, tag = [item, [tagged, sec_type], amount, tradeable, placeable])
+            icon.on_click = Func(Inventory.draggable_mouse_hover, self, x = icon.x, y = icon.y, mouse = True, tag = [item, [tagged, sec_type], amount, tradeable, placeable])
             try:
                 self.highlight_click_tile.position = [self.position.x + 0.108 * dict_x[icon.position.x] + 0.055, self.position.y + 0.108 * dict_y[icon.position.y] - 0.38, -0.1]
             except: print('Key Error : Nincs a szótárban')
@@ -919,11 +1072,11 @@ class Inventory(Entity):
                 if c == icon:
                     continue
 
-                if c.tag[1] == icon.tag[1]:
+                if c.tag[1][0] == icon.tag[1][0]:
                     if c.x == icon.x and c.y == icon.y:
                         c.position = icon.org_pos
-                        c.on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x=c.x, y=c.y, mouse=False)
-                        c.on_click = Func(Inventory.draggable_mouse_hover, self, x=c.x, y=c.y, mouse=True)
+                        c.on_mouse_enter = Func(Inventory.draggable_mouse_hover, self, x=c.x, y=c.y, mouse=False, tag = [item, [tagged, sec_type], amount, tradeable, placeable])
+                        c.on_click = Func(Inventory.draggable_mouse_hover, self, x=c.x, y=c.y, mouse=True, tag = [item, [tagged, sec_type], amount, tradeable, placeable])
                         self.highlight_click_tile.position = [self.position.x + 0.108 * dict_x[icon.position.x] + 0.055, self.position.y + 0.108 * dict_y[icon.position.y] - 0.38, -0.1]
 
         icon.drag = drag
@@ -957,6 +1110,35 @@ class Inventory(Entity):
         for bgs in self.nums_bg_list:
             bgs.fade_in(value=1, duration=0.3, delay=0.02)
 
+        for button in self.inv_button_list:
+            button.enable()
+
+        self.inv_button_food.fade_in(value=1, duration=0.1, delay=0)
+        self.inv_button_tonic.fade_in(value=1, duration=0.1, delay=0)
+        self.inv_button_card.fade_in(value=1, duration=0.1, delay=0)
+        self.inv_button_builds.fade_in(value=1, duration=0.1, delay=0)
+        self.inv_button_vals.fade_in(value=1, duration=0.1, delay=0)
+        self.inv_button_craft.fade_in(value=1, duration=0.1, delay=0)
+        self.item_title.fade_in(value=1, duration=0.1, delay=0)
+        self.inventory_label_txt.fade_in(value=1, duration=0.1, delay=0)
+
+        self.inventory_label_txt.position = [x + 0.24 + -0.065, 0.4, -0.11]
+        self.inv_button_food.position = [x + 0.24 + -0.12, 0.32, -0.1]
+        self.inv_button_tonic.position = [x + 0.24 + -0.075, 0.32, -0.1]
+        self.inv_button_card.position = [x + 0.24 + -0.03, 0.32, -0.1]
+        self.inv_button_builds.position = [x + 0.24 + 0.015, 0.32, -0.1]
+        self.inv_button_vals.position = [x + 0.24 + 0.06, 0.32, -0.1]
+        self.inv_button_craft.position = [x + 0.24 + 0.105, 0.32, -0.1]
+
+        self.inv_button_food_click.position = [x + 0.24 + -0.12, 0.32, -0.12]
+        self.inv_button_tonic_click.position = [x + 0.24 + -0.075, 0.32, -0.12]
+        self.inv_button_card_click.position = [x + 0.24 + -0.03, 0.32, -0.12]
+        self.inv_button_builds_click.position = [x + 0.24 + 0.015, 0.32, -0.12]
+        self.inv_button_vals_click.position = [x + 0.24 + 0.06, 0.32, -0.12]
+        self.inv_button_craft_click.position = [x + 0.24 + 0.105, 0.32, -0.12]
+        self.item_title.position = [x + 0.24 + 0, -0.2, -0.11]
+
+
     def hide_inventory(self):
         self.visible = False
         self.pause_menu.filters.setBlurSharpen(amount=1)
@@ -974,13 +1156,29 @@ class Inventory(Entity):
         for bgs in self.nums_bg_list:
             bgs.fade_out(value=0, duration=0.3, delay=0.02)
 
-    def add_item(self, _item_, category, item_amount, tradeable, placeable):
+        for button in self.inv_button_list:
+            button.disable()
+
+        self.inv_button_food.fade_out(value=0, duration=0.1, delay=0)
+        self.inv_button_tonic.fade_out(value=0, duration=0.1, delay=0)
+        self.inv_button_card.fade_out(value=0, duration=0.1, delay=0)
+        self.inv_button_builds.fade_out(value=0, duration=0.1, delay=0)
+        self.inv_button_vals.fade_out(value=0, duration=0.1, delay=0)
+        self.inv_button_craft.fade_out(value=0, duration=0.1, delay=0)
+        self.item_title.fade_out(value=0, duration=0.1, delay=0)
+        self.inventory_label_txt.fade_out(value=0, duration=0.1, delay=0)
+
+    def add_item(self, _item_, category, item_amount, tradeable, sec_type, placeable):
         current_item_ids = []
         for i in self.children:
             current_item_ids.append(i.tag[0])
 
+            if i.tag[1][0] != self.page:
+                i.visible = False
+                i.collider = None
+
         if _item_ not in current_item_ids:
-            self.append(item = _item_, tagged = category, amount = item_amount, tradeable = tradeable, placeable = placeable)
+            self.append(item = _item_, tagged = category, sec_type = sec_type, amount = item_amount, tradeable = tradeable, placeable = placeable)
             print('Még nem létezett, szóval létrehoztam')
 
         else:

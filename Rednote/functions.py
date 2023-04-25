@@ -23,14 +23,14 @@ clk_counter = 0
 def give_back_clicked_pos():
     global clk_counter, a1
     try:
-        print(f'[{floor(mouse.world_point.x)},{floor(mouse.world_point.y + 1)}],')
-        '''if clk_counter == 0:
-            a1 = f'[({floor(mouse.world_point.x)},{floor(mouse.world_point.y + 1)}'
+        #print(f'[{floor(mouse.world_point.x)},{floor(mouse.world_point.y + 1)}],')
+        if clk_counter == 0:
+            a1 = f'[({round(mouse.world_point.x, 2)},{round(mouse.world_point.y + 1, 2)}'
             clk_counter += 1
 
         elif clk_counter == 1:
-            print(f'{a1}),({round(mouse.world_point.x)},{round(mouse.world_point.y)})],')
-            clk_counter = 0'''
+            print(f'{a1}),({round(mouse.world_point.x, 2)},{round(mouse.world_point.y, 2)})],')
+            clk_counter = 0
 
         Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -2 ), scale = 10, text = str(floor(mouse.world_point.x)) + " / " + str(floor(mouse.world_point.y)))
         Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.05, world_position = (mouse.world_point.x, mouse.world_point.y, -2 )  )
@@ -176,7 +176,9 @@ def fast_load_to_excel(data_frame, matrix, excel_path, sheet):
     for tile in matrix.updated_tiles:
         data_frame['reserved_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['reserved']
         data_frame['type_' + str(tile[0])][matrix.size_y - tile[1]] = matrix.matrix[matrix.size_y - tile[1]][tile[0]]['type']
-    data_frame.to_excel(excel_path, sheet_name = sheet, index = False)
+    try:
+        data_frame.to_excel(excel_path, sheet_name = sheet, index = False)
+    except: pass
 
 
 

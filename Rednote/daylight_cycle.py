@@ -14,6 +14,7 @@ light_dictionary = {'street_lamp' : ((1, 0, 0.002)),
 
 class LightSource():
     def __init__(self, host, position = [0, 0], attenuation = (0.1, 0.01, 0.0), color = [1,1,1], type = None):
+        self.color = color
         self.light_node = PointLight('light 1')
         self.light = render.attach_new_node(self.light_node)
         base.render.set_light(self.light)
@@ -30,13 +31,13 @@ class LightSource():
 
     #-------------------------------------------------------------------------------------------------------------------
     def new_position(self, x, y):
-        self.light.set_pos(x, y, -0.5)
+        self.light.set_pos(x, y, -0.9)
 
     def turn_off(self):
-        pass
+        self.light_node.setColor((0,0,0,0))
 
     def turn_on(self):
-        pass
+        self.light_node.setColor((self.color[0], self.color[1], self.color[2], 10))
 
     def change_color(self):
         pass
@@ -69,9 +70,13 @@ class LightSystem():
 
 
     def stop_time(self):
-        self.light_animation.pause()
+        try:
+            self.light_animation.pause()
+        except: pass
     def start_time(self):
-        self.light_animation.resume()
+        try:
+            self.light_animation.resume()
+        except: pass
 
     def time_set(self, value):
         if value == self.difference[self.player.season][0]: # kivilágosodik
