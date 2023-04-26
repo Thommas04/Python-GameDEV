@@ -934,6 +934,7 @@ def loadbar_double_click(self, menu): # start game
     menu.location = 'loading_screen'
 
     invoke(run_loading_screen, menu, False, delay = 1)
+    menu.player.selected_load_path = f'saves/{self.loadbar_text.text}'
 
     # beolvas a fájlból a mátrixba # TODO
     menu.matrix_info_frame = read_excel(f"saves/{self.loadbar_text.text}/info_data.xlsx", sheet_name='infoset')

@@ -23,7 +23,8 @@ clk_counter = 0
 def give_back_clicked_pos():
     global clk_counter, a1
     try:
-        #print(f'[{floor(mouse.world_point.x)},{floor(mouse.world_point.y + 1)}],')
+        print('guddddddddddd')
+        '''#print(f'[{floor(mouse.world_point.x)},{floor(mouse.world_point.y + 1)}],')
         if clk_counter == 0:
             a1 = f'[({round(mouse.world_point.x, 2)},{round(mouse.world_point.y + 1, 2)}'
             clk_counter += 1
@@ -33,7 +34,7 @@ def give_back_clicked_pos():
             clk_counter = 0
 
         Text(parent = scene, world_position = (mouse.world_point.x, mouse.world_point.y, -2 ), scale = 10, text = str(floor(mouse.world_point.x)) + " / " + str(floor(mouse.world_point.y)))
-        Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.05, world_position = (mouse.world_point.x, mouse.world_point.y, -2 )  )
+        Entity(parent = scene, model = 'sphere', color = color.red, scale = 0.05, world_position = (mouse.world_point.x, mouse.world_point.y, -2 )  )'''
     except: pass
 
 # [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]

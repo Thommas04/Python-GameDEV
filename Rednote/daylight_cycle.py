@@ -52,20 +52,26 @@ class LightSystem():
         self.player = player
         self.ambient_light = AmbientLight(color = rgb(40, 40, 42))
 
-    # A Value-t percekben kapjuk meg
-    # 6:00 -> 360
+        # A Value-t percekben kapjuk meg
+        # 6:00 -> 360
 
-    #SEASON SET
+        #SEASON SET
 
-    # SPRING
-    # SUMMER
-    # FALL
-    # WINTER
+        # SPRING
+        # SUMMER
+        # FALL
+        # WINTER
 
-        self.difference = {'spring' : [361, 960, 1140],
-                           'summer' : [361, 1050, 1230],
-                           'fall'   : [390, 840, 990],
-                           'winter' : [440, 780, 900]
+        '''self.difference = {'spring': [361, 960, 1140],
+                           'summer': [361, 1050, 1230],
+                           'fall': [390, 840, 990],
+                           'winter': [440, 780, 900]
+                           }'''
+
+        self.difference = {'spring' : [361, 480, 610],
+                           'summer' : [361, 490, 620],
+                           'fall'   : [361, 500, 630],
+                           'winter' : [361, 510, 640]
                           }
 
 
@@ -80,11 +86,11 @@ class LightSystem():
 
     def time_set(self, value):
         if value == self.difference[self.player.season][0]: # kivilágosodik
-            self.light_animation = self.ambient_light.animate_color(rgb(179, 207, 226), duration = 60) # Nappali fény
+            self.light_animation = self.ambient_light.animate_color(rgb(179, 207, 226), duration = 20) # Nappali fény
 
         if value == self.difference[self.player.season][1]: # Kezd lemenni a nap
-            self.light_animation = self.ambient_light.animate_color(rgb(137, 120, 93), duration = 60)
+            self.light_animation = self.ambient_light.animate_color(rgb(137, 120, 93), duration = 20)
 
         if value == self.difference[self.player.season][2]: # Sötét este
-            self.light_animation = self.ambient_light.animate_color(rgb(16, 26, 45), duration = 60)
+            self.light_animation = self.ambient_light.animate_color(rgb(16, 26, 45), duration = 20)
 

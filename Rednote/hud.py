@@ -456,40 +456,45 @@ class HUD(Entity):
     #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
     #SHOP HOVER
 
-    def shop_click(self):
-        self.shop_bars.tile_coordinate = [0,1]
-        self.shop_selector.alpha = 1
+    def shop_click(self, title, price, shop_bars, shop_selector):
+        shop_bars.tile_coordinate = [0,1]
 
-        if self.player.player_stats['bank_balance'] >= 320:
-            self.player.amount_of_tower += 1
-            self.player.player_stats['bank_balance'] -= 320
+        if self.player.player_stats['bank_balance'] >= price: #TODO
+            self.player.shop_get_item(title)
+            self.player.player_stats['bank_balance'] -= price
             HUD.show_money_text(self, self.player.player_stats['bank_balance'], self.player.player_stats['wallet_balance'])
 
-    def shop_hover(self,):
-        self.shop_bars.tile_coordinate = [0,0]
+    def shop_single_click(self, shop_selector):
+        for i in self.shop_selector_list:
+            i.alpha = 0
+        shop_selector.alpha = 1
 
-    def shop_leave(self):
-        self.shop_bars.tile_coordinate = [0,1]
+
+    def shop_hover(self, shop_bar):
+        shop_bar.tile_coordinate = [0,0]
+
+    def shop_leave(self, shop_bar):
+        shop_bar.tile_coordinate = [0,1]
 
 
     def create_shop_bar(self, row, title, price):
-        difference = row * 0.25
-        self.shop_bars = Entity(texture=bars_sheet, model='quad', position=(-0.55, 0.25 + difference, -0.06), scale=(0.48, 0.09, 0), alpha=0, parent=camera.ui, tileset_size=[1, 3], tile_coordinate=[0, 1])
-        self.shop_selector = Entity(texture=bars_sheet, model='quad', position=(-0.55, 0.25 + difference, -0.07), scale=(0.48, 0.09, 0), alpha=0, parent=camera.ui, tileset_size=[1, 3], tile_coordinate=[0, 2])
+        difference = row * 0.055
+        self.shop_bars = Entity(texture=bars_sheet, model='quad', position=(-0.55, 0.25 - difference, -0.06), scale=(0.48, 0.09, 0), alpha=0, parent=camera.ui, tileset_size=[1, 3], tile_coordinate=[0, 1])
+        self.shop_selector = Entity(texture=bars_sheet, model='quad', position=(-0.55, 0.25 - difference, -0.07), scale=(0.48, 0.09, 0), alpha=0, parent=camera.ui, tileset_size=[1, 3], tile_coordinate=[0, 2])
 
-        self.shop_first_clickable = Entity(model='quad', position=(-0.54, 0.25, -0.08), scale=(0.48, 0.07, 0), alpha=0,
-                                           collider='box', parent=camera.ui, on_click=Func(HUD.shop_click, self, title),
-                                           on_mouse_enter=Func(HUD.shop_hover, self, self.shop_bars),
-                                           on_mouse_exit=Func(HUD.shop_leave, self, self.shop_bars))
-        self.shop_first_clickable.disable()
-
-        self.shop_text = Text(text='Torony', position=(-0.75, 0.26, -0.09), color=rgb(172, 174, 190), parent=camera.ui,
-                              font='fonts/CHINESER.TTF', scale=1.1)
-        self.price_text = Text(text='$320', position=(-0.45, 0.26, -0.09), origin=(-0.5, 0.5), color=rgb(172, 174, 190),
-                               parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.1)
+        self.shop_first_clickable = Entity(model='quad', position=(-0.54, 0.25 - difference, -0.08), scale=(0.48, 0.07, 0), alpha=0, collider='box', parent=camera.ui, on_click = Func(HUD.shop_single_click, self, self.shop_selector), on_double_click=Func(HUD.shop_click, self, title, price, self.shop_bars, self.shop_selector), on_mouse_enter=Func(HUD.shop_hover, self, self.shop_bars), on_mouse_exit=Func(HUD.shop_leave, self, self.shop_bars))
+        self.shop_text = Text(text=title, position=(-0.75, 0.26 - difference, -0.09), color=rgb(172, 174, 190), parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.1)
+        self.price_text = Text(text=f'${price}', position=(-0.35, 0.26 - difference, -0.09), origin=(0.5, 0.5), color=rgb(172, 174, 190), parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.1)
 
         self.shop_text.alpha = 0
         self.price_text.alpha = 0
+
+        self.shop_first_clickable.disable()
+        self.shop_clickables_list.append(self.shop_first_clickable)
+        self.shop_alphas_list.append(self.shop_text)
+        self.shop_alphas_list.append(self.price_text)
+        self.shop_alphas_list.append(self.shop_bars)
+        self.shop_selector_list.append(self.shop_selector)
 
     #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -497,6 +502,11 @@ class HUD(Entity):
         self.language_file = language_file
         self.player = player
         self.minimap = Entity(texture = minimap, model = 'quad', position = (-0.68, -0.32, -0.05), scale = (0.4, 0.4, 0), alpha = 0, parent = camera.ui)
+
+        self.shop_clickables_list = []
+        self.shop_alphas_list = []
+        self.shop_selector_list = []
+
 
         num_sides = 50
 
@@ -639,35 +649,39 @@ class HUD(Entity):
         # -------------------------------------------------------------------------------------------------------------
         # SHOP
 
-        self.shop_bars = Entity(texture=bars_sheet, model='quad', position=(-0.55, 0.25, -0.06), scale=(0.48, 0.09, 0), alpha=0, parent=camera.ui, tileset_size=[1, 3], tile_coordinate=[0, 1])
-        self.shop_selector = Entity(texture=bars_sheet, model='quad', position=(-0.55, 0.25, -0.07), scale=(0.48, 0.09, 0), alpha=0, parent=camera.ui, tileset_size=[1, 3], tile_coordinate=[0, 2])
         self.shop_bg = Entity(texture = shop_bg, model='quad', position=(-0.54, 0, -0.05), scale=(0.57, 0.88, 0), alpha=0, parent=camera.ui)
+        HUD.create_shop_bar(self, 0, 'Torony', 320)
+        HUD.create_shop_bar(self, 1, 'Juhar mag', 55)
+        HUD.create_shop_bar(self, 2, 'Tölgy mag', 30)
+        HUD.create_shop_bar(self, 3, 'Mahagoni mag', 90)
+        HUD.create_shop_bar(self, 4, 'Fenyö mag', 55)
+        HUD.create_shop_bar(self, 5, 'Kenyér', 35)
+        HUD.create_shop_bar(self, 6, 'Kolbász', 55)
+        HUD.create_shop_bar(self, 7, 'Csodabogár Elixír', 350)
+        HUD.create_shop_bar(self, 8, 'Életerö bájital', 325)
+        HUD.create_shop_bar(self, 9, 'Energia bájital', 250)
+        HUD.create_shop_bar(self, 10, 'Whisky', 50)
 
-        self.shop_first_clickable = Entity(model='quad', position=(-0.54, 0.25, -0.08), scale=(0.48, 0.07, 0), alpha=0, collider = 'box', parent=camera.ui, on_click=Func(HUD.shop_click, self), on_mouse_enter=Func(HUD.shop_hover, self), on_mouse_exit=Func(HUD.shop_leave, self))
-        self.shop_first_clickable.disable()
-
-        self.shop_text = Text(text = 'Torony', position=(-0.75, 0.26, -0.09), color = rgb(172,174,190), parent=camera.ui, font='fonts/CHINESER.TTF', scale = 1.1)
-        self.price_text = Text(text='$320', position=(-0.45, 0.26, -0.09), origin = (-0.5, 0.5), color=rgb(172, 174, 190), parent=camera.ui, font='fonts/CHINESER.TTF', scale=1.1)
-
-        self.shop_text.alpha = 0
-        self.price_text.alpha = 0
 
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
     def show_shop(self):
-        self.shop_bars.fade_in(value = 1, delay = 0.12, duration = 0.1)
         self.shop_bg.fade_in(value = 1, delay = 0.1, duration = 0.1)
-        self.shop_text.fade_in(value = 1, delay = 0.1, duration = 0.1)
-        self.price_text.fade_in(value = 1, delay = 0.1, duration = 0.1)
-        self.shop_first_clickable.enable()
+        for i in self.shop_clickables_list:
+            i.enable()
+        for i in self.shop_alphas_list:
+            i.alpha = 1
+        for i in self.shop_selector_list:
+            i.alpha = 0
 
     def hide_shop(self):
-        self.shop_bars.fade_out(value=0, delay=0.12, duration=0.1)
-        self.shop_selector.fade_out(value=0, delay=0.12, duration=0.1)
         self.shop_bg.fade_out(value=0, delay=0.1, duration=0.1)
-        self.shop_text.fade_out(value=0, delay=0.1, duration=0.1)
-        self.price_text.fade_out(value=0, delay=0.1, duration=0.1)
-        self.shop_first_clickable.disable()
+        for i in self.shop_clickables_list:
+            i.disable()
+        for i in self.shop_alphas_list:
+            i.alpha = 0
+        for i in self.shop_selector_list:
+            i.alpha = 0
 
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
